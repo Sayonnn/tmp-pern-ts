@@ -1,65 +1,39 @@
-import { useEffect, useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { Routes, Route } from "react-router-dom";
+import Home from "./clients/pages/Home.tsx";
+import NotFound from "./pages/NotFound.tsx";
+import Login from "./clients/pages/auths/Login.tsx";
+import Signup from "./clients/pages/auths/Signup.tsx";
+import About from "./clients/pages/About.tsx";
+// admin pages
+import AdminLogin from "./admin/pages/Login.tsx";
+import Dashboard from "./admin/pages/Dashboard.tsx";
+// others
+import { useAuth } from "./hooks/useAuth.tsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 
-function App() {
-  const [count, setCount] = useState(0);
-  const [apiData, setApiData] = useState<any>(null);
-
-  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
-
-
-  useEffect(() => {
-    fetch(`${API_URL}/api`)
-      .then((res) => res.json())
-      .then((data) => setApiData(data))
-      .catch(console.error);
-  }, [API_URL]);
-  
+function App() { 
+  const { isAuthenticated } = useAuth();
 
   return (
-    <div className="app-container">
-      <header className="header">
-        <div className="logo-container">
-          <img src={viteLogo} alt="Vite Logo" className="logo" />
-          <img src={reactLogo} alt="React Logo" className="logo react" />
-        </div>
-        <h1>Vite + React Demo</h1>
-        <p className="subtitle">Professional-looking test page</p>
-      </header>
+    <Routes>
+      {/* Public/Clients */}
+      <Route path="/" element={<Home />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
 
-      <main className="main-content">
-        <div className="card">
-          <h2>Counter</h2>
-          <button onClick={() => setCount((count) => count + 1)}>
-            Count is {count}
-          </button>
-        </div>
-
-        <div className="card api-card">
-          <h2>API Response</h2>
-          {apiData ? (
-            <pre>{JSON.stringify(apiData, null, 2)}</pre>
-          ) : (
-            <p>Loading data...</p>
-          )}
-        </div>
-      </main>
-
-      <footer className="footer">
-        <p>
-          Learn more:{" "}
-          <a href="https://vite.dev" target="_blank">
-            Vite
-          </a>{" "}
-          &amp;{" "}
-          <a href="https://react.dev" target="_blank">
-            React
-          </a>
-        </p>
-      </footer>
-    </div>
+      {/* Admin */}
+      <Route path="/upguard-admin" element={<AdminLogin />} />
+      <Route
+        path="/upguard-admin/dashboard"
+        element={
+          <ProtectedRoute isAuthenticated={isAuthenticated}>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 

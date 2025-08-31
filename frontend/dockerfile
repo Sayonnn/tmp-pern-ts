@@ -22,14 +22,16 @@ RUN npm run build
 
 # ---------- Stage 2: Serve with NGINX ----------
 
-# Use a lightweight NGINX image to serve static files
 FROM nginx:alpine
 
 # Copy build output from Stage 1 to NGINX's default static folder
 COPY --from=build /app/dist /usr/share/nginx/html
 
+# Copy custom NGINX config (with SPA fallback)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Expose port 80 so the app can be accessed in browser
 EXPOSE 80
 
-# Run NGINX in the foreground (otherwise container would exit immediately)
+# Run NGINX in the foreground
 CMD ["nginx", "-g", "daemon off;"]
