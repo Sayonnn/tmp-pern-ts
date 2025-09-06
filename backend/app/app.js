@@ -24,6 +24,9 @@ app.use("/upguard-admin/auth", adminAuthRoutes);
 /** Client Routes */
 app.use("/auth", ClientAuthRoutes);
 
+/** Monitoring Routes */
+app.use("/api", logsRoutes);
+
 /** Index Route */
 app.get("/", (req, res) => {
   res.json({ message: "Welcome to Upguard | The number 1 website Performance booster and Web Monitoring Service" });
