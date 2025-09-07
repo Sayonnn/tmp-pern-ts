@@ -7,20 +7,28 @@ import { hashPassword, comparePassword } from "../utils/hash.js";
  * @param {string} email 
  * @param {string} password
  * @returns {Object} user, accessToken, refreshToken
+ * NOTE: prevent duplicate email and username
  */
-export async function registerClient(email, password) {
+export async function registerClient(email, password, username) {
   // Check if email already exists
-  const checkSql = "SELECT id FROM uge_clients WHERE email = $1";
-  const existing = await startQuery(checkSql, [email]);
+  const checkEmailSql = "SELECT id FROM uge_clients WHERE email = $1";
+  const existingEmail = await startQuery(checkEmailSql, [email]);
 
-  if (existing.rows.length > 0) {
-    throw new Error("Email already registered");
+  if (existingEmail.rows.length > 0) {
+    throw { field: "email", message: "This email is already registered." };
   }
 
-  // Hash password
+  const checkUsernameSql = "SELECT id FROM uge_clients WHERE username = $1";
+  const existingUsername = await startQuery(checkUsernameSql, [username]);
+
+  if (existingUsername.rows.length > 0) {
+    throw { field: "username", message: "This username is already registered." };
+  }
+
+  /** Hash Password */
   const hashedPassword = await hashPassword(password);
 
-  // Save client (force role = 'client')
+  /** Save Client (force role = 'client') */
   const sql = `
     INSERT INTO uge_clients (email, password, username, role)
     VALUES ($1, $2, $3, 'client')
@@ -30,7 +38,7 @@ export async function registerClient(email, password) {
   const result = await startQuery(sql, params);
   const user = result.rows[0];
 
-  // Generate tokens
+  /** Generate Tokens */
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 
@@ -43,24 +51,22 @@ export async function registerClient(email, password) {
  * @param {string} password
  * @returns {Object} user, accessToken, refreshToken
  */
-export async function loginClient(email, password) {
-  // Check if email exists
-  const checkSql = "SELECT id, email, password, role FROM uge_clients WHERE email = $1";
-  const existing = await startQuery(checkSql, [email]);
+export async function loginClient(username, password) {
+  const checkUserSql = "SELECT id, email, password, role, username FROM uge_clients WHERE username = $1";
+  const existing = await startQuery(checkUserSql, [username]);
 
   if (existing.rows.length === 0) {
-    throw new Error("Email not found");
+    throw { field: "username", message: "This username does not exist." };
   }
 
   const user = existing.rows[0];
 
-  // Verify password
   const isPasswordValid = await comparePassword(password, user.password);
   if (!isPasswordValid) {
-    throw new Error("Invalid password");
+    throw { field: "password", message: "The password you entered is incorrect." };
   }
 
-  // Generate tokens
+  /** Generate Tokens */
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);
 

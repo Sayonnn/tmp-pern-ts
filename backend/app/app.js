@@ -10,23 +10,24 @@ import adminAuthRoutes from "./admin/routes/auth.routes.js";
 import adminMailRoutes from "./admin/routes/mail.routes.js";
 import ClientMailRoutes from "./routes/mail.routes.js";
 import logsRoutes from "./routes/log.routes.js";
+import { corsConfig } from "./configs/cors.js";
 
 const app = express();
 
 /** Middlewares */
 app.use(morgan("dev"));
-app.use(cors());
+app.use(cors(corsConfig));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /** Admin Routes */
-app.use("/upguard-admin/auth", adminAuthRoutes);
-app.use("/upguard-admin/mailer", adminMailRoutes);
+app.use("/api/upguard-admin/auth", adminAuthRoutes);
+app.use("/api/upguard-admin/mailer", adminMailRoutes);
 
 /** Client Routes */
-app.use("/auth", ClientAuthRoutes);
-app.use("/mailer", ClientMailRoutes);
+app.use("/api/auth", ClientAuthRoutes);
+app.use("/api/mailer", ClientMailRoutes);
 
 /** Monitoring Routes */
 app.use("/api", logsRoutes);

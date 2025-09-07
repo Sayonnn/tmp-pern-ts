@@ -1,11 +1,11 @@
 import { useState } from "react";
-import { useAuth } from "../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../hooks/useNotification";
 import TextInput from "../../components/TextInput"; // import the reusable component
+import { useAuthContext } from "../../providers/AuthProvider";
 
 function Login() {
-  const { login } = useAuth();
+  const { login } = useAuthContext();
   const navigate = useNavigate();
   const { notify } = useNotification();
 
@@ -17,7 +17,7 @@ function Login() {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     setUsernameError(null);
@@ -35,18 +35,23 @@ function Login() {
       return;
     }
 
-    const response = login({ username, password, role });
-    setLoading(false);
+    try {
+      const response = await login({ username, password, role });
+      setLoading(false);
 
-    if (!response.status) {
-      if (response.field === "username") setUsernameError(response.message);
-      else if (response.field === "password") setPasswordError(response.message);
-      else notify && notify(response.message, "error");
-      return;
+      if (!response.status) {
+        if (response.field === "username") setUsernameError(response.message);
+        else if (response.field === "password") setPasswordError(response.message);
+        else notify && notify(response.message, "error");
+        return;
+      }
+
+      notify && notify(response.message, "success");
+      setTimeout(() => navigate("/upguard-admin/dashboard"), 1000);
+    } catch (err: any) {
+      setLoading(false);
+      notify && notify(err.message || "Login failed", "error");
     }
-
-    notify && notify(response.message, "success");
-    setTimeout(() => navigate("/upguard-admin/dashboard"), 1000);
   };
 
   return (

@@ -7,10 +7,17 @@ export const registerAdmin = async (email, password, username) => {
     const checkEmailSql= `SELECT id FROM uge_admins WHERE email = $1 RETURNING id,email,role,username, permission, created_at`;
     const existing = await startQuery(checkEmailSql, [email]);
 
-    if(existing.row.length > 0){
-        throw new Error("Email already registered");
+    if(existing.rows.length > 0){
+        throw { field: "email", message: "This email is already registered." };
     }
 
+    const checkUsernameSql = "SELECT id FROM uge_admins WHERE username = $1";
+    const existingUsername = await startQuery(checkUsernameSql, [username]);
+  
+    if (existingUsername.rows.length > 0) {
+      throw { field: "username", message: "This username is already registered." };
+    }
+  
     /** Hash Password */
     const hashedPassword = await hashPassword(password);
 
@@ -29,7 +36,7 @@ export const registerAdmin = async (email, password, username) => {
    const refreshToken = generateRefreshToken(user);
 
    return { user, accessToken, refreshToken };
-}
+} 
 
 export const loginAdmin = async (email, password) => {
     /** Check Email Exists */
@@ -37,7 +44,7 @@ export const loginAdmin = async (email, password) => {
     const existing = await startQuery(checkEmailSql, [email]);
 
     if(existing.row.length === 0){
-        throw new Error("Email not found");
+        throw { field: "email", message: "Email not found" };
     }
 
     const user = existing.rows[0];
@@ -45,7 +52,7 @@ export const loginAdmin = async (email, password) => {
     /** Verify Password */
     const isPasswordValid = await comparePassword(password, user.password);
     if(!isPasswordValid){
-        throw new Error("Invalid password");
+        throw { field: "password", message: "Invalid password" };
     }
 
     /** Generate Tokens */

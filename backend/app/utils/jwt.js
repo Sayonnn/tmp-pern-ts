@@ -38,6 +38,15 @@ export const generateRefreshToken = (user) => {
 }
 
 /**
+ * Verify Token
+ * @param {string} token - The token to verify
+ * @returns {Object} - The decoded token
+ */
+export const verifyToken = (token) => {
+    return jwt.verify(token, config.jwt.secret);
+}
+
+/**
  * Generate access and refresh tokens for a user
  * @param {Object} user - The user object
  * @returns {Object} - The access and refresh tokens

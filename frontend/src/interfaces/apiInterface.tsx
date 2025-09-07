@@ -1,6 +1,5 @@
 export interface apiArgumentProps {
     url:string,
-    method:string,
     data?:any,
     params?:any,
 }

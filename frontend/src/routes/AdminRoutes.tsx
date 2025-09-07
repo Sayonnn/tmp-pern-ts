@@ -2,11 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../admin/pages/Login";
 import Dashboard from "../admin/pages/Dashboard";
 import ProtectedRoute from "../middlewares/ProtectedRoute";
-import { useAuth } from "../hooks/useAuth";
 import NotFound from "../pages/NotFound";
+import { useAuthContext } from "../providers/AuthProvider";
 
 function AdminRoutes() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated } = useAuthContext();
 
   return (
     <Routes>

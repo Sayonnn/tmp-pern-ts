@@ -1,6 +1,5 @@
 import { pool } from "../configs/database.js";
 
-
 /** 
  * Start a database query
  * @param {string} sql - The SQL query to execute

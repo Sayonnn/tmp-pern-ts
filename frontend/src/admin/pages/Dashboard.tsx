@@ -1,6 +1,10 @@
+import { useAuthContext } from "../../providers/AuthProvider";
+
 function Dashboard() {
+    const { user } = useAuthContext();
+  
   return (
-    <div>Dashboard</div>
+    <div>Dashboard {user?.username}</div>
   )
 }
 

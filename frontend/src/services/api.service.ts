@@ -38,11 +38,39 @@ apiService.interceptors.request.use((config) => {
  * @param {Object} response
  * @returns response or throws error
  */
-apiService.interceptors.response.use((response) => {
-    return response;
-}, (error) => {
-  return Promise.reject(error);
-})
+apiService.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
+
+    // If unauthorized (401) and we haven’t retried yet
+    if (error.response?.status === 401 && !originalRequest._retry) {
+      originalRequest._retry = true;
+
+      try {
+        // Call refresh token endpoint (refresh token stored in HttpOnly cookie)
+        const { data } = await apiService.post("/auth/refresh-access-token");
+
+        // Save new token
+        localStorage.setItem("authToken", data.accessToken);
+
+        // Update headers and retry the original request
+        apiService.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
+        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+
+        return apiService(originalRequest);
+      } catch (refreshError) {
+        console.error("Refresh token failed:", refreshError);
+
+        // Clear token and redirect to login (optional)
+        localStorage.removeItem("authToken");
+        window.location.href = "/";
+      }
+    }
+
+    return Promise.reject(error);
+  }
+);
 
 /**
  * Fetch a single resource
@@ -89,6 +117,7 @@ export const fetchDatas = async ({ url, params = {} }: apiArgumentProps) => {
  * Create a single resource
  * @param {Object} url, data
  * @returns created resource data or throws error
+ * Also used for login and registration 
  */
 export const postDatas = async ({ url, data = {} }: apiArgumentProps) => {
   try {

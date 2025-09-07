@@ -1,6 +1,7 @@
 import { registerClient, loginClient } from "../services/auth.service.js";
-import { errorResponse } from "../utils/errors.js";
-import { generateAccessToken } from "../utils/jwt.js";
+import { errorResponse, successResponse } from "../utils/response.js";
+import { generateAccessToken, verifyToken } from "../utils/jwt.js";
+import { saveCookie } from "../utils/cookies.js";
 
 /** Register a new client
  * @param {Object} req - The request object
@@ -9,18 +10,27 @@ import { generateAccessToken } from "../utils/jwt.js";
  */
 export const startClientRegistration = async (req, res) => {
     try {
-        const { email, password,username } = req.body;
+        const { email, password, username } = req.body;
     
         if (!email || !password || !username) {
           return errorResponse(res, 400, "Email, password and username are required");
         }
     
         const { user, accessToken, refreshToken } = await registerClient(email, password, username);
+
+        saveCookie(res, "refreshToken", refreshToken);
     
-        return res.json({ user, accessToken, refreshToken });
+        return successResponse(res, "Register successful", { user, accessToken });
     } catch (err) {
         console.error("Register Error:", err);
-        return errorResponse(res, 400, err.message || "Register failed");
+
+        // Handle custom structured error
+        if (err.field && err.message) {
+            return errorResponse(res, 400, err.message, err.field);
+        }
+
+        // Fallback generic error
+        return errorResponse(res, 400, "Register failed, please try again");
     }
 }
 
@@ -30,40 +40,59 @@ export const startClientRegistration = async (req, res) => {
  * @returns {Object} user, accessToken, refreshToken
  */
 export const startClientLogin = async (req, res) => {
-    try {
-        const { email, password } = req.body;
-    
-        if (!email || !password) {
-          return errorResponse(res, 400, "Email, password are required");
-        }
-    
-        const { user, accessToken, refreshToken } = await loginClient(email, password);
-    
-        return res.json({ user, accessToken, refreshToken });
-    } catch (err) {
-        console.error("Login Error:", err);
-        return errorResponse(res, 400, err.message || "Login failed");
-    }
-}
+  try {
+    const { username, password } = req.body;
 
-/** Refresh an client's access token
- * @param {Object} req - The request object
- * @param {Object} res - The response object
- * @returns {Object} user, accessToken
+    if (!username || !password) {
+      return errorResponse(res, 400, "Username and password are required", !username ? "username" : "password");
+    }
+
+    const { user, accessToken, refreshToken } = await loginClient(username, password);
+
+    saveCookie(res, "refreshToken", refreshToken);
+
+    return successResponse(res, "Login successful", { user, accessToken });
+  } catch (err) {
+    console.error("Login Error:", err);
+
+    // Handle custom structured error
+    if (err.field && err.message) {
+      return errorResponse(res, 400, err.message, err.field);
+    }
+
+    // Fallback generic error
+    return errorResponse(res, 400, "Login failed, please try again");
+  }
+};
+
+/**
+ * Refresh client's access token using refresh token
  */
 export const refreshClientAccessToken = async (req, res) => {
-    try {
-        const { refreshToken } = req.body;
-    
-        if (!refreshToken) {
-          return errorResponse(res, 400, "Refresh token is required");
-        }
-    
-        const { user, accessToken } = await generateAccessToken(refreshToken);
-    
-        return res.json({ user, accessToken });
-      } catch (err) {
-        console.error("Refresh Token Error:", err);
-        return errorResponse(res, 400, err.message || "Refresh token failed");
+  try {
+    const refreshToken = req.cookies.refreshToken;
+
+    if (!refreshToken) {
+      return errorResponse(res, 401, "Refresh token missing. Please log in again.");
     }
-}
+
+    // Verify refresh token
+    const decoded = verifyToken(refreshToken);
+
+    // ⚠️ At this point you can either:
+    //   a) trust decoded payload (fast, stateless, typical JWT flow)
+    //   b) check DB if refresh token is still valid (revocation logic)
+
+    // Generate new access token
+    const accessToken = generateAccessToken(decoded);
+
+    return successResponse(res, "Refresh successful", {
+      user: { id: decoded.id, email: decoded.email,username: decoded.username, role: decoded.role,created_at: decoded.created_at },
+      accessToken,
+    });
+  } catch (err) {
+    console.error("Refresh Token Error:", err);
+
+    return errorResponse(res, 403, "Refresh failed. Please log in again.");
+  }
+};

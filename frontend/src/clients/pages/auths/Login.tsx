@@ -1,11 +1,11 @@
 import { useState, type SetStateAction } from "react";
-import { useAuth } from "../../../hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../hooks/useNotification";
-import TextInput from "../../../components/TextInput"; // import the reusable component
+import TextInput from "../../../components/TextInput";
+import { useAuthContext } from "../../../providers/AuthProvider";
 
 function Login() {
-  const { login } = useAuth();
+  const { login } = useAuthContext();
   const navigate = useNavigate();
   const { notify } = useNotification();
 
@@ -17,13 +17,14 @@ function Login() {
   const [usernameError, setUsernameError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  /** Handle submit */
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     setUsernameError(null);
     setPasswordError(null);
     setLoading(true);
-
+  
     if (!username.trim()) {
       setUsernameError("Username is required");
       setLoading(false);
@@ -34,21 +35,27 @@ function Login() {
       setLoading(false);
       return;
     }
-
-    const response = login({ username, password, role });
-    setLoading(false);
-
-    if (!response.status) {
-      if (response.field === "username") setUsernameError(response.message);
-      else if (response.field === "password") setPasswordError(response.message);
-      else notify && notify(response.message, "error");
-      return;
+  
+    try {
+      const response = await login({ username, password, role }); 
+      setLoading(false);
+  
+      if (!response.status) {
+        if (response.field === "username") setUsernameError(response.message);
+        else if (response.field === "password") setPasswordError(response.message);
+        else notify && notify(response.message, "error");
+        return;
+      }
+  
+      notify && notify(response.message, "success");
+      setTimeout(() => navigate("/dashboard"), 1000);
+    } catch (err: any) {
+      setLoading(false);
+      notify && notify(err.message || "Login failed", "error");
     }
-
-    notify && notify(response.message, "success");
-    setTimeout(() => navigate("/upguard-admin/dashboard"), 1000);
   };
-
+  
+  
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-100">
       <form
