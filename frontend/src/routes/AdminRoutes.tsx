@@ -10,10 +10,10 @@ function AdminRoutes() {
 
   return (
     <Routes>
-      {/* When user goes to /upguard-admin, show Login */}
+      {/* When user goes to /speedmate-admin, show Login */}
       <Route path="" element={<Login />} />
 
-      {/* Protected Dashboard (full path: /upguard-admin/dashboard) */}
+      {/* Protected Dashboard (full path: /speedmate-admin/dashboard) */}
       <Route
         path="dashboard"
         element={

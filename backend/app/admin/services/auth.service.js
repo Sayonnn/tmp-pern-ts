@@ -1,17 +1,25 @@
 import { startQuery } from "../../utils/query.js";
-import { hashPassword } from "../../utils/hash.js";
+import { comparePassword, hashPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
 
-export const registerAdmin = async (email, password, username) => {
+export const registerAdmin = async (
+  email,
+  password,
+  permissions = {},
+  super_admin = true,
+  username,
+  role = "admin"   
+) => {
     /** Check Email Exists */
-    const checkEmailSql= `SELECT id FROM uge_admins WHERE email = $1 RETURNING id,email,role,username, permission, created_at`;
-    const existing = await startQuery(checkEmailSql, [email]);
+    const checkEmailSql = `SELECT id FROM spm_admins WHERE email = $1`;
+    const existingEmail = await startQuery(checkEmailSql, [email]);
 
-    if(existing.rows.length > 0){
+    if(existingEmail.rows.length > 0){
         throw { field: "email", message: "This email is already registered." };
     }
 
-    const checkUsernameSql = "SELECT id FROM uge_admins WHERE username = $1";
+    /** Check Username Exists */
+    const checkUsernameSql = "SELECT id FROM spm_admins WHERE username = $1";
     const existingUsername = await startQuery(checkUsernameSql, [username]);
   
     if (existingUsername.rows.length > 0) {
@@ -22,31 +30,31 @@ export const registerAdmin = async (email, password, username) => {
     const hashedPassword = await hashPassword(password);
 
     /** Save Admin */
-   const sql = `
-    INSERT INTO uge_admins (email, password, username, role)
-    VALUES ($1, $2, $3, 'admin')
-    RETURNING id, email, role, username, created_at
-   `
-   const params = [email, hashedPassword, username];
-   const result = await startQuery(sql, params);
-   const user = result.rows[0];
+    const sql = `
+      INSERT INTO spm_admins (email, password, super_admin, username, permissions, role)
+      VALUES ($1, $2, $3, $4, $5, $6)
+      RETURNING id, email, super_admin, username, permissions, role, created_at
+    `;
+    const params = [email, hashedPassword, super_admin, username, JSON.stringify(permissions), role];
+    const result = await startQuery(sql, params);
+    const user = result.rows[0];
 
-   /** Generate Tokens */
-   const accessToken = generateAccessToken(user);
-   const refreshToken = generateRefreshToken(user);
+    /** Generate Tokens */
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
 
-   return { user, accessToken, refreshToken };
-} 
+    return { user, accessToken, refreshToken };
+};
 
-export const loginAdmin = async (email, password) => {
-    /** Check Email Exists */
-    const checkEmailSql= `SELECT id FROM uge_admins WHERE email = $1 RETURNING id,email,role,username, permission, created_at`;
-    const existing = await startQuery(checkEmailSql, [email]);
-
-    if(existing.row.length === 0){
-        throw { field: "email", message: "Email not found" };
+export const loginAdmin = async (username, password) => {
+    /** Check Username Exists */
+    const checkUserSql = "SELECT id, email, password, permissions, super_admin, username, role FROM spm_admins WHERE username = $1";
+    const existing = await startQuery(checkUserSql, [username]);
+  
+    if (existing.rows.length === 0) {
+      throw { field: "username", message: "This username does not exist." };
     }
-
+  
     const user = existing.rows[0];
 
     /** Verify Password */

@@ -2,13 +2,13 @@
 # scripts/refresh_seed.sh
 
 # Name of your Postgres container (must match docker-compose.yml)
-CONTAINER_NAME=db_upguard
-DB_USER=upguard
-DB_NAME=db_upguard
-DB_PASSWORD=upguard19!
+CONTAINER_NAME=db_speedmate
+DB_USER=speedmate
+DB_NAME=db_speedmate
+DB_PASSWORD=speedmate19!
 
 #OUTPUT FILE
-OUTPUT_FILE=./outputs/init.sql
+OUTPUT_FILE=./outputs/speedmate.sql
 
 echo "📦 Exporting database '$DB_NAME' from container '$CONTAINER_NAME'..."
 

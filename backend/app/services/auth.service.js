@@ -11,14 +11,14 @@ import { hashPassword, comparePassword } from "../utils/hash.js";
  */
 export async function registerClient(email, password, username) {
   // Check if email already exists
-  const checkEmailSql = "SELECT id FROM uge_clients WHERE email = $1";
+  const checkEmailSql = "SELECT id FROM spm_clients WHERE email = $1";
   const existingEmail = await startQuery(checkEmailSql, [email]);
 
   if (existingEmail.rows.length > 0) {
     throw { field: "email", message: "This email is already registered." };
   }
 
-  const checkUsernameSql = "SELECT id FROM uge_clients WHERE username = $1";
+  const checkUsernameSql = "SELECT id FROM spm_clients WHERE username = $1";
   const existingUsername = await startQuery(checkUsernameSql, [username]);
 
   if (existingUsername.rows.length > 0) {
@@ -30,7 +30,7 @@ export async function registerClient(email, password, username) {
 
   /** Save Client (force role = 'client') */
   const sql = `
-    INSERT INTO uge_clients (email, password, username, role)
+    INSERT INTO spm_clients (email, password, username, role)
     VALUES ($1, $2, $3, 'client')
     RETURNING id, email, role, username, created_at
   `;
@@ -52,7 +52,7 @@ export async function registerClient(email, password, username) {
  * @returns {Object} user, accessToken, refreshToken
  */
 export async function loginClient(username, password) {
-  const checkUserSql = "SELECT id, email, password, role, username FROM uge_clients WHERE username = $1";
+  const checkUserSql = "SELECT id, email, password, role, username FROM spm_clients WHERE username = $1";
   const existing = await startQuery(checkUserSql, [username]);
 
   if (existing.rows.length === 0) {

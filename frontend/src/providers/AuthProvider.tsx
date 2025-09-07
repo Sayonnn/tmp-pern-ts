@@ -66,7 +66,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     try {
       const response = await postDatas({
-        url: role === "admin" ? "/upguard-admin/auth/login" : "/auth/login",
+        url: role === "admin" ? "/speedmate-admin/auth/login" : "/auth/login",
         data: { username, password },
       });
 

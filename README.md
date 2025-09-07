@@ -1,20 +1,20 @@
-# upguard
+# speedmate
 Full template of MERN with the needed dependencies for development. *** run npm install on frontend and backend folders ***
-Github: https://github.com/Sayonnn/upguard.git
+Github: https://github.com/Sayonnn/speedmate.git
 ## database credentials
-```
-docker run --name db_upguard \
-  -e POSTGRES_USER=upguard \
-  -e POSTGRES_PASSWORD=upguard19! \
-  -e POSTGRES_DB=db_upguard \
+``` 
+docker run --name db_speedmate \
+  -e POSTGRES_USER=speedmate \
+  -e POSTGRES_PASSWORD=speedmate19! \
+  -e POSTGRES_DB=db_speedmate \
   -p 5432:5432 \
-  -v db_upguard_data:/var/lib/postgresql/data \
+  -v db_speedmate_data:/var/lib/postgresql/data \
   -d postgres:16
 ``` 
 
 ## Admin Notes
 ```
- uge_admins permissions column accepts bjon (JSON) 
+ spm_admins permissions column accepts bjon (JSON) 
  The permissions here are binary
  4 = read
  2 = write

@@ -15,13 +15,13 @@ export default async function sendEmail({
   name = "",
   link = "",
   template = "",
-  subject = "UPGuard Expert",
+  subject = "SpeedMate Expert",
   attachments = [],
 }) {
   const recipients = Array.isArray(to) ? to.join(", ") : to;
 
   await transporter.sendMail({
-    from: `"UPGuard Expert" <${config.mail.auth.user}>`,
+    from: `"SpeedMate Expert" <${config.mail.auth.user}>`,
     to: recipients,
     subject,
     template,

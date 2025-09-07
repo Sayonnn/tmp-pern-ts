@@ -22,8 +22,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /** Admin Routes */
-app.use("/api/upguard-admin/auth", adminAuthRoutes);
-app.use("/api/upguard-admin/mailer", adminMailRoutes);
+app.use("/api/speedmate-admin/auth", adminAuthRoutes);
+app.use("/api/speedmate-admin/mailer", adminMailRoutes);
 
 /** Client Routes */
 app.use("/api/auth", ClientAuthRoutes);
@@ -34,7 +34,7 @@ app.use("/api", logsRoutes);
 
 /** Index Route */
 app.get("/", (req, res) => {
-  res.json({ message: "Welcome to Upguard | The number 1 website Performance booster and Web Monitoring Service" });
+  res.json({ message: "Welcome to SpeedMate | The number 1 website Performance booster and Web Monitoring Service" });
 });
 
 /** Test API Endpoint */

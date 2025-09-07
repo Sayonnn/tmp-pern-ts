@@ -8,12 +8,12 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
 
   // Not logged in → redirect
   if (!isAuthenticated) {
-    return <Navigate to={role === "admin" ? "/upguard-admin" : "/"} />;
+    return <Navigate to={role === "admin" ? "/speedmate-admin" : "/"} />;
   }
 
   // Logged in but role does not match → redirect
   if (role && user?.role !== role) {
-    return <Navigate to={user?.role === "admin" ? "/upguard-admin" : "/"} />;
+    return <Navigate to={user?.role === "admin" ? "/speedmate-admin" : "/"} />;
   }
 
   // Authorized

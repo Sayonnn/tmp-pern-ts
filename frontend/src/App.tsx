@@ -11,7 +11,7 @@ function App() {
         <Route path="/*" element={<ClientRoutes />} />
 
         {/* Admin */}
-        <Route path="/upguard-admin/*" element={<AdminRoutes />} />
+        <Route path="/speedmate-admin/*" element={<AdminRoutes />} />
     </Routes>
   );
 }

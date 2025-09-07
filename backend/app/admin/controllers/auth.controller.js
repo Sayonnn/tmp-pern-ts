@@ -12,29 +12,40 @@ import { saveCookie } from "../../utils/cookies.js";
  */
 export const startAdminRegistration = async (req, res) => {
     try {
-        const { email, password, username } = req.body;
+      const { email, password,super_admin,role, permissions, username } = req.body;
+  
+      if (!email || !password || !username) {
+        return errorResponse(res, 400, "Email, password and username are required");
+      }
+        
+      // Provide a default role if missing
+      const finalRole = role || "admin";
 
-        if (!email || !password || !username) {
-            return errorResponse(res, 400, "Email, password and username are required");
-        }
+      const { user, accessToken, refreshToken } = await registerAdmin(
+          email,
+          password,
+          permissions,
+          super_admin,
+          username,
+          finalRole
+      );
 
-        const { user, accessToken, refreshToken } = await registerAdmin(email, password, username);
-
-        saveCookie(res, "refreshToken", refreshToken);
-
-        return successResponse(res, "Register successful", { user, accessToken });
+  
+      saveCookie(res, "refreshToken", refreshToken);
+  
+      return successResponse(res, "Register successful", { user, accessToken });
     } catch (err) {
-        console.error("Register Error:", err);
-
-        // Handle custom structured error
-        if (err.field && err.message) {
-            return errorResponse(res, 400, err.message, err.field);
-        }
-
-        // Fallback generic error
-        return errorResponse(res, 400, "Register failed, please try again");
+      console.error("Register Error:", err);
+  
+      // If error has message, send it directly
+      if (err instanceof Error) {
+        return errorResponse(res, 400, err.message);
+      }
+  
+      // Fallback generic error
+      return errorResponse(res, 400, "Register failed, please try again");
     }
-}
+};
 
 /**
  * Login an admin
@@ -93,7 +104,7 @@ export const refreshAdminAccessToken = async (req, res) => {
       const accessToken = generateAccessToken(decoded);
   
       return successResponse(res, "Refresh successful", {
-        user: { id: decoded.id, email: decoded.email,username: decoded.username, role: decoded.role,permission: decoded.permission,created_at: decoded.created_at },
+        user: { id: decoded.id, email: decoded.email,username: decoded.username, role: decoded.role,permissions: decoded.permissions,created_at: decoded.created_at },
         accessToken,
       });
     } catch (err) {

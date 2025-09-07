@@ -11,7 +11,7 @@ function Login() {
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [role] = useState("client");
+  const [role] = useState("admin");
   const [loading, setLoading] = useState(false);
 
   const [usernameError, setUsernameError] = useState<string | null>(null);
@@ -47,7 +47,7 @@ function Login() {
       }
 
       notify && notify(response.message, "success");
-      setTimeout(() => navigate("/upguard-admin/dashboard"), 1000);
+      setTimeout(() => navigate("/speedmate-admin/dashboard"), 1000);
     } catch (err: any) {
       setLoading(false);
       notify && notify(err.message || "Login failed", "error");
