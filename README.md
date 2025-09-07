@@ -12,6 +12,15 @@ docker run --name db_upguard \
   -d postgres:16
 ``` 
 
+## Admin Notes
+```
+ uge_admins permissions column accepts bjon (JSON) 
+ The permissions here are binary
+ 4 = read
+ 2 = write
+ 1 = access
+```
+
 ## mail credentials
 ```
 Email: support@judydropship.com
