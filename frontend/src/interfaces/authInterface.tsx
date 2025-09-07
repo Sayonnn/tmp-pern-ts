@@ -1,11 +1,5 @@
 import type { User } from "./userInterface";
 
-export interface ProtectedRouteProps {
-    isAuthenticated: boolean;
-    children: React.ReactNode;
-    role:string;
-}
-  
 export interface loginProcessArgsProps {
     username: string;
     password: string;
@@ -38,3 +32,11 @@ export interface AuthContextProps {
   login: (args: loginProcessArgsProps) => Promise<loginProcessResponseProps>;
   logout: () => void;
 }
+
+export interface ProtectedRouteProps {
+  isAuthenticated: boolean;
+  children: React.ReactNode;
+  role: "admin" | "client";
+}
+
+
