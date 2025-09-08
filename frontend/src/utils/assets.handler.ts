@@ -1,5 +1,6 @@
 import { downloadAsset } from "../services/api.service";
 import { type fileArgumentProps } from "../interfaces/apiInterface";
+import { runCatchErrorLogger, throwCatchError } from "./response.handler";
 
 export const handleDownload = async ({url, filename} : fileArgumentProps) => {
     if(!url || !filename){
@@ -8,7 +9,8 @@ export const handleDownload = async ({url, filename} : fileArgumentProps) => {
 
     try {
       await downloadAsset({ url, filename});
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      throwCatchError(error);
+      runCatchErrorLogger(error);
     }
   };

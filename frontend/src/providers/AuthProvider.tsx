@@ -1,12 +1,13 @@
 // AuthContext.tsx
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import type { AuthContextProps, DecodedToken, loginProcessArgsProps, loginProcessResponseProps } from "../interfaces/authInterface";
 import { postDatas } from "../services/api.service";
 import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";
+import { runCatchErrorLogger, runTryErrorLogger, throwCatchError, throwTryError } from "../utils/response.handler";
 
-const AuthContext = createContext<AuthContextProps | undefined>(undefined);
+export const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -43,13 +44,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           } else {
             // Token expired → refresh
             const response = await postDatas({ url: "/auth/refresh-access-token" });
+            if(!response || !response.data){
+              throwTryError(response);
+              runTryErrorLogger(response);
+              logout();
+              return;
+            }
             setStorage("authToken", response.accessToken);
             setStorage("authUser", JSON.stringify(response.user));
             setAccessToken(response.accessToken);
             setIsAuthenticated(true);
             setUser(response.user);
           }
-        } catch {
+        } catch(error:any) {  
+          runCatchErrorLogger(error);
+          throwCatchError(error);
           logout();
         }
       }
@@ -60,6 +69,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     initializeAuth();
   }, []);
 
+  /**
+   * Login Process | Authentication Global Provider
+   * @param param0 loginProcessArgsProps
+   * @returns loginProcessResponseProps
+   */
   const login = async ({ username, password, role }: loginProcessArgsProps) => {
     if (!username || !password)
       return { status: false, message: "Username or password missing" } as loginProcessResponseProps;
@@ -76,9 +90,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       setIsAuthenticated(true);
       setUser(response.user);
 
-      return { status: true, message: "Login successful" };
+      return { status: true, message: response.message };
     } catch (error: any) {
-      return { status: false, message: error.message || "Login failed" };
+      return { status: false, message: error.message || "Login failed",field:error.field };
     }
   };
 
@@ -99,8 +113,3 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
-export const useAuthContext = () => {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuthContext must be used within AuthProvider");
-  return context;
-};

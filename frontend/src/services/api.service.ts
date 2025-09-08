@@ -1,6 +1,6 @@
 import axios from "axios";
 import type { apiArgumentProps, fileArgumentProps } from "../interfaces/apiInterface";
-import { logError } from "../utils/errors.handler";
+import { runCatchErrorLogger, runTryErrorLogger, throwCatchError, throwTryError } from "../utils/response.handler";
 
 export const API_URL = import.meta.env.VITE_API_URL;
 
@@ -59,8 +59,9 @@ apiService.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
 
         return apiService(originalRequest);
-      } catch (refreshError) {
-        console.error("Refresh token failed:", refreshError);
+      } catch (error) {
+        runCatchErrorLogger(error);
+        throwCatchError(error);
 
         // Clear token and redirect to login (optional)
         localStorage.removeItem("authToken");
@@ -82,14 +83,15 @@ export const fetchData = async ({ url, params = {} }: apiArgumentProps) => {
     const response = await apiService.get(url, { params });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     const data = Array.isArray(response.data) ? response.data[0] : response.data;
     return data;
   } catch (error: any) {
-    logError(error, "fetchData");
-    throw new Error(error.message || "Failed to fetch data");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -103,13 +105,14 @@ export const fetchDatas = async ({ url, params = {} }: apiArgumentProps) => {
     const response = await apiService.get(url, { params });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     return response.data;
   } catch (error: any) {
-    logError(error, "fetchDatas");
-    throw new Error(error.message || "Failed to fetch data");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -124,13 +127,14 @@ export const postDatas = async ({ url, data = {} }: apiArgumentProps) => {
     const response = await apiService.post(url, data);
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     return response.data;
   } catch (error: any) {
-    logError(error, "postDatas");
-    throw new Error(error.message || "Failed to post data");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -144,13 +148,14 @@ export const putDatas = async ({ url, data = {}, params = {} }: apiArgumentProps
     const response = await apiService.put(url, data, { params });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     return response.data;
   } catch (error: any) {
-    logError(error, "putDatas");
-    throw new Error(error.message || "Failed to put data");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
   
@@ -164,13 +169,14 @@ export const deleteDatas = async ({ url, params = {} }: apiArgumentProps) => {
     const response = await apiService.delete(url, { params });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     return response.data;
   } catch (error: any) {
-    logError(error, "deleteDatas");
-    throw new Error(error.message || "Failed to delete data");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -206,14 +212,15 @@ export const uploadAsset = async ({url, file,onProgress}: fileArgumentProps) => 
    });
 
    if (!response || !response.data) {
-    throw new Error("No data received from server");
+    throwTryError(response);
+    runTryErrorLogger(response);
    }
 
    return response.data;
 
   } catch (error: any) {
-    logError(error, "uploadAsset");
-    throw new Error(error.message || "Failed to upload asset");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -243,13 +250,14 @@ export const uploadAssets = async ({url,files,onProgress}: fileArgumentProps) =>
     });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     return response.data;
   } catch (error: any) {
-    logError(error, "uploadAssets");
-    throw new Error(error.message || "Failed to upload assets");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };
 
@@ -271,7 +279,8 @@ export const downloadAsset = async ({ url, params = {},filename = "file" }: file
     });
 
     if (!response || !response.data) {
-      throw new Error("No data received from server");
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
 
     const link = document.createElement('a');
@@ -283,7 +292,7 @@ export const downloadAsset = async ({ url, params = {},filename = "file" }: file
 
     return true;
   } catch (error: any) {
-    logError(error, "downloadAsset");
-    throw new Error(error.message || "Failed to download asset");
+    runCatchErrorLogger(error);
+    throwCatchError(error);
   }
 };

@@ -6,6 +6,7 @@
  * @param {string} [field] - optional field causing the error
  */
 export function errorResponse(res, status, message, field = null) {
+  console.error("Error Response:", message)
   return res.status(status).json({
     status: false,
     message,

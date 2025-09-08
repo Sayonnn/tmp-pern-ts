@@ -7,7 +7,7 @@ import Login from "../clients/pages/auths/Login";
 import ProtectedRoute from "../middlewares/ProtectedRoute";
 import Dashboard from "../clients/pages/Dashboard";
 import NotFound from "../pages/NotFound";
-import { useAuthContext } from "../providers/AuthProvider";
+import { useAuthContext } from "../hooks/useAuth";
 
 function ClientRoutes() {
   const {isAuthenticated} = useAuthContext();

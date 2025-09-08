@@ -1,4 +1,4 @@
-const allowedOrigins = ["http://localhost:8001", "https://speedmate-client.vercel.app"];
+const allowedOrigins = ["http://localhost:8001","http://localhost:5173", "https://speedmate-client.vercel.app"];
 
 export const corsConfig = {
     origin: (origin,callback) => {

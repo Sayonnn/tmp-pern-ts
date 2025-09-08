@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useNotification } from "../../hooks/useNotification";
-import TextInput from "../../components/TextInput"; // import the reusable component
-import { useAuthContext } from "../../providers/AuthProvider";
+import { useNotification } from "../../../hooks/useNotification";
+import TextInput from "../../../components/TextInput"; // import the reusable component
+import { useAuthContext } from "../../../hooks/useAuth";
 
 function Login() {
   const { login } = useAuthContext();
@@ -36,21 +36,23 @@ function Login() {
     }
 
     try {
-      const response = await login({ username, password, role });
+      const { status,message,field } = await login({ username, password, role });
+      console.log({status,message,field});
+
       setLoading(false);
 
-      if (!response.status) {
-        if (response.field === "username") setUsernameError(response.message);
-        else if (response.field === "password") setPasswordError(response.message);
-        else notify && notify(response.message, "error");
+      if (!status) {
+        if (field === "username") setUsernameError(message);
+        else if (field === "password") setPasswordError(message);
+        else notify && notify(message, "error");
         return;
       }
 
-      notify && notify(response.message, "success");
+      notify && notify(message, "success");
       setTimeout(() => navigate("/speedmate-admin/dashboard"), 1000);
-    } catch (err: any) {
+    } catch (error: any) {
       setLoading(false);
-      notify && notify(err.message || "Login failed", "error");
+      notify && notify(error.message || "Login failed", "error");
     }
   };
 
