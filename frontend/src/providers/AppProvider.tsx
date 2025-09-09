@@ -8,6 +8,11 @@ export function AppProvider({ children }: AppProviderProps) {
     appName: import.meta.env.VITE_APP_NAME,
     appCoolName: import.meta.env.VITE_APP_COOL_NAME,
     appDescription: import.meta.env.VITE_APP_DESCRIPTION,
+    appTagline: import.meta.env.VITE_APP_TAGLINE,
+    appKeywords: import.meta.env.VITE_APP_KEYWORDS,
+    appAuthor: import.meta.env.VITE_APP_AUTHOR,
+    appUrl: import.meta.env.VITE_APP_URL,
+    appImage: import.meta.env.VITE_APP_IMAGE,
   };
 
   return (
