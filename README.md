@@ -1,32 +1,18 @@
+---
+
 # 🚀 SPEEDMATE | Web Speed Booster & Monitoring Service
 
 A **full MERN template** with the required dependencies for development.
-⚡ Make sure to run `npm install` inside both `frontend` and `backend` folders.
 
 📂 **GitHub Repo:** [speedmate](https://github.com/Sayonnn/speedmate.git)
 
 ---
 
-## 📦 Database Setup
-
-Run the following command to start PostgreSQL with Docker:
-
-```bash
-docker run --name db_speedmate \
-  -e POSTGRES_USER=speedmate \
-  -e POSTGRES_PASSWORD=speedmate19! \
-  -e POSTGRES_DB=db_speedmate \
-  -p 5432:5432 \
-  -v db_speedmate_data:/var/lib/postgresql/data \
-  -d postgres:16
-```
-
----
-
 ## 🔑 Admin Notes
 
-* The `spm_admins.permissions` column accepts **JSON (bjson)**.
-* Permissions use a **binary system**:
+* The admin `permissions` column is of type **JSONB**.
+* It accepts an **array of numbers** to represent permissions (e.g., `[4, 2, 1]`).
+* Permission values:
 
   * `4 = read`
   * `2 = write`
@@ -41,8 +27,6 @@ Email: support@speedmate.com
 Email: noreply@speedmate.com
 Password: JudyDropship@19!
 ```
-
----
 
 ---
 
@@ -62,11 +46,24 @@ client: speedmate | speedmate19!
 ```bash
 # start docker
 docker compose up --build
-# create tables
+# create tables ( if tables doesnt exist after building )
 ./scripts/create_tables.sh
 # fix frontend if there is an issue after docker
 cd frontend && npm i && npm run dev
 ```
+
+---
+
+## 🔄 Reusing the Project
+
+1. Update frontend env.development and env.production
+2. Update database name on \[ scripts/create\_tables.sh ] and \[ scripts/export\_db.sh ] (APP\_NAME | DB\_ABBR)
+3. Update backend env or global naming
+4. Update Dockerfiles ( if needed )
+5. Update docker-compose.yml
+6. Update .github/workflows/main.yml
+
+---
 
 ### Before Committing
 
@@ -84,15 +81,18 @@ Routes → Controllers → Services → Utils
 
 ---
 
-## 🔄 Reusing the Project
+## 📦 Database Setup
 
-1. Update frontend env or global namings
-2. Update frontend index.html
-3. Update database name on [ scripts/create_tables.sh ] and [ scripts/export_db.sh ] (APP_NAME | DB_ABBR)
-4. Update backend env or global naming
-5. Update docker-compose.yml
-6. Update .github/workflows/main.yml
-7. Update .env
-8. Update .gitignore
-9. Update Dockerfile
+Run the following command to start PostgreSQL with Docker:
+
+```bash
+docker run --name db_speedmate \
+  -e POSTGRES_USER=speedmate \
+  -e POSTGRES_PASSWORD=speedmate19! \
+  -e POSTGRES_DB=db_speedmate \
+  -p 5432:5432 \
+  -v db_speedmate_data:/var/lib/postgresql/data \
+  -d postgres:16
+```
+
 ---
