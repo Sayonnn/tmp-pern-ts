@@ -2,7 +2,7 @@ import { startQuery } from "../utils/query.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
 
-/**
+/** 
  * Register a new client
  * @param {string} email 
  * @param {string} password

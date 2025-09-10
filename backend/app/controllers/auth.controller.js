@@ -33,7 +33,7 @@ export const startClientRegistration = async (req, res) => {
         return errorResponse(res, 400, "Register failed, please try again");
     }
 }
-
+ 
 /** Login a client
  * @param {Object} req - The request object
  * @param {Object} res - The response object
