@@ -1,5 +1,5 @@
-import useAuthContext from "../../hooks/useAuth";
-import { formatDate } from "../../utils/date.handler";
+import useAuthContext from "../hooks/useAuth";
+import { formatDate } from "../utils/date.handler";
 
 function Dashboard() {
     const { user } = useAuthContext();

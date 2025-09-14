@@ -1,12 +1,12 @@
 import { Routes,Route } from "react-router-dom";
-import About from "../clients/pages/About";
-import Signup from "../clients/pages/auths/Signup";
-import Home from "../clients/pages/Home";
-import ForgotPassword from "../clients/pages/auths/ForgotPassword";
-import Login from "../clients/pages/auths/Login";
+import About from "../pages/About";
+import Signup from "../pages/auths/Signup";
+import Home from "../pages/Home";
+import ForgotPassword from "../pages/auths/ForgotPassword";
+import Login from "../pages/auths/Login";
 import ProtectedRoute from "../middlewares/ProtectedRoute";
-import Dashboard from "../clients/pages/Dashboard";
-import NotFound from "../pages/NotFound";
+import Dashboard from "../pages/Dashboard";
+import NotFound from "../pages/defaults/NotFound";
 import useAuthContext from "../hooks/useAuth";
 
 function ClientRoutes() {

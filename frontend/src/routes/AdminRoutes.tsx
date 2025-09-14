@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 import Login from "../admin/pages/auth/Login";
 import Dashboard from "../admin/pages/Dashboard";
 import ProtectedRoute from "../middlewares/ProtectedRoute";
-import NotFound from "../pages/NotFound";
+import NotFound from "../pages/defaults/NotFound";
 import useAuthContext from "../hooks/useAuth";
 
 function AdminRoutes() {
