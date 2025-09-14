@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from "react";
 import type { AuthContextProps, DecodedToken, loginProcessArgsProps } from "../interfaces/authInterface";
-import { postDatas } from "../services/api.service";
+import { postDatas } from "../services/axios.service";
 import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";

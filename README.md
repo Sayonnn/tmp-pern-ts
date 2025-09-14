@@ -60,8 +60,9 @@ cd frontend && npm i && npm run dev
 2. Update database name on \[ scripts/create\_tables.sh ] and \[ scripts/export\_db.sh ] (APP\_NAME | DB\_ABBR)
 3. Update backend env or global naming
 4. Update Dockerfiles ( if needed )
-5. Update docker-compose.yml
-6. Update .github/workflows/main.yml
+5. Update api.service.ts ( if needed )
+6. Update docker-compose.yml
+7. Update .github/workflows/main.yml
 
 ---
 

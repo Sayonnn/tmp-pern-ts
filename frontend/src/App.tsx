@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import ClientRoutes from "./routes/ClientRoutes";
-import AdminRoutes from "./routes/AdminRoutes";
+import AdminRoutes from "./admin/routes/AdminRoutes";
 import useAppContext from "./hooks/useApp";
 
 function App() {

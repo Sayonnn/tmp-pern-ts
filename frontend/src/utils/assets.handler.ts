@@ -1,4 +1,4 @@
-import { downloadAsset } from "../services/api.service";
+import { downloadAsset } from "../services/axios.service";
 import { type fileArgumentProps } from "../interfaces/apiInterface";
 import { runCatchErrorLogger, throwCatchError } from "./response.handler";
 
