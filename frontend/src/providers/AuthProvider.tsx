@@ -114,6 +114,7 @@ const refreshData = async (role: string) => {
       } else {
         await ClientService.auth.logout();
       }
+      window.location.reload();
     } catch (err) {
       console.warn("Logout API failed, proceeding to clear local state anyway:", err);
     } finally {
