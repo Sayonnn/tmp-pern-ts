@@ -2,7 +2,7 @@
 
 # 🚀 SPEEDMATE | Web Speed Booster & Monitoring Service
 
-A **full MERN template** with the required dependencies for development.
+A **full Vite Typecript + NodeJS ExpressJS + PosgreSQL template** with the required dependencies for development.
 
 📂 **GitHub Repo:** [speedmate](https://github.com/Sayonnn/speedmate.git)
 
