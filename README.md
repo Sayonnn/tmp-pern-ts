@@ -1,10 +1,10 @@
 ---
 
-# 🚀 JudyShop is a medium e commerce site for famiily business
+# 🚀 JudyHub is a medium e commerce site for famiily business
 
-JudyShop 🇵🇭 | Professional and extraordinary web portfolio
+JudyHub 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [judyshop](https://github.com/Sayonnn/judyshop.git)
+📂 **GitHub Repo:** [judyhub](https://github.com/Sayonnn/judyhub.git)
 
 ---
 
@@ -23,8 +23,8 @@ JudyShop 🇵🇭 | Professional and extraordinary web portfolio
 ## 📧 Mail Credentials
 
 ```txt
-Email: support@judyshop.com
-Email: noreply@judyshop.com
+Email: support@judyhub.com
+Email: noreply@judyhub.com
 Password: JudyDropship@19!
 ```
 
@@ -33,8 +33,8 @@ Password: JudyDropship@19!
 ## 📧 System Default Credentials
 
 ```txt
-admin: admin | judyshop19!
-client: judyshop | judyshop19!
+admin: admin | judyhub19!
+client: judyhub | judyhub19!
 ```
 
 ---
@@ -87,12 +87,12 @@ Routes → Controllers → Services → Utils
 Run the following command to start PostgreSQL with Docker:
 
 ```bash
-docker run --name db_judyshop \
-  -e POSTGRES_USER=judyshop \
-  -e POSTGRES_PASSWORD=judyshop19! \
-  -e POSTGRES_DB=db_judyshop \
+docker run --name db_judyhub \
+  -e POSTGRES_USER=judyhub \
+  -e POSTGRES_PASSWORD=judyhub19! \
+  -e POSTGRES_DB=db_judyhub \
   -p 5432:5432 \
-  -v db_judyshop_data:/var/lib/postgresql/data \
+  -v db_judyhub_data:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
