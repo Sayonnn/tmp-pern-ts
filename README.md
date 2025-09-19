@@ -1,10 +1,10 @@
 ---
 
-# 🚀 SAYONPH | Web Speed Booster & Monitoring Service
+# 🚀 JudyShop is a medium e commerce site for famiily business
 
-Sayon PH 🇵🇭 | Professional and extraordinary web portfolio
+JudyShop 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [sayonph](https://github.com/Sayonnn/sayonph.git)
+📂 **GitHub Repo:** [judyshop](https://github.com/Sayonnn/judyshop.git)
 
 ---
 
@@ -23,8 +23,8 @@ Sayon PH 🇵🇭 | Professional and extraordinary web portfolio
 ## 📧 Mail Credentials
 
 ```txt
-Email: support@sayonph.com
-Email: noreply@sayonph.com
+Email: support@judyshop.com
+Email: noreply@judyshop.com
 Password: JudyDropship@19!
 ```
 
@@ -33,8 +33,8 @@ Password: JudyDropship@19!
 ## 📧 System Default Credentials
 
 ```txt
-admin: admin | sayonph19!
-client: sayonph | sayonph19!
+admin: admin | judyshop19!
+client: judyshop | judyshop19!
 ```
 
 ---
@@ -87,12 +87,12 @@ Routes → Controllers → Services → Utils
 Run the following command to start PostgreSQL with Docker:
 
 ```bash
-docker run --name db_sayonph \
-  -e POSTGRES_USER=sayonph \
-  -e POSTGRES_PASSWORD=sayonph19! \
-  -e POSTGRES_DB=db_sayonph \
+docker run --name db_judyshop \
+  -e POSTGRES_USER=judyshop \
+  -e POSTGRES_PASSWORD=judyshop19! \
+  -e POSTGRES_DB=db_judyshop \
   -p 5432:5432 \
-  -v db_sayonph_data:/var/lib/postgresql/data \
+  -v db_judyshop_data:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
