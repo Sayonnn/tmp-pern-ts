@@ -37,9 +37,14 @@ export interface AuthContextProps {
 }
 
 export interface ProtectedRouteProps {
-  isAuthenticated: boolean;
   children: React.ReactNode;
-  role: "admin" | "client";
+  role?: "admin" | "client";
 }
 
-
+export interface RouteConfigArray {
+  path:string;
+  element:React.ReactNode;
+  role?: "admin" | "client";
+  isAuthenticated?: boolean;
+  isProtected?: boolean;
+}

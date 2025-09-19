@@ -12,7 +12,7 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
   if (!isAuthenticated) {
     return <Navigate to={role === "admin" ? `/${configs.appName}-admin` : "/login"} />;
   }
-
+ 
   // Logged in but role does not match → redirect
   if (role && user?.role !== role) {
     return <Navigate to={user?.role === "admin" ? `/${configs.appName}-admin` : "/"} />;

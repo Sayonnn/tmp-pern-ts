@@ -1,28 +1,23 @@
 import { Routes, Route } from "react-router-dom";
-import Login from "../pages/auth/Login";
-import Dashboard from "../pages/Dashboard";
+import { routes } from "../configs/adminRoutes.config";
 import ProtectedRoute from "../../middlewares/ProtectedRoute";
-import NotFound from "../../pages/defaults/NotFound";
-import useAuthContext from "../../hooks/useAuth";
 
 function AdminRoutes() {
-  const { isAuthenticated } = useAuthContext();
-
   return (
     <Routes>
-      <Route path="" element={<Login />} />
-
-      <Route
-        path="dashboard"  
-        element={
-          <ProtectedRoute isAuthenticated={isAuthenticated} role="admin">
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Catch-all for unmatched client routes */}
-      <Route path="*" element={<NotFound />} />
+      {routes.map(({ path, element, isProtected, role }, index) => (
+        <Route
+          key={index}
+          path={path}
+          element={
+            isProtected ? (
+              <ProtectedRoute role={role}>{element}</ProtectedRoute>
+            ) : (
+              element
+            )
+          }
+        />
+      ))}
     </Routes>
   );
 }
