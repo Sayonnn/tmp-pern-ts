@@ -1,10 +1,10 @@
 ---
 
-# 🚀 SPEEDMATE | Web Speed Booster & Monitoring Service
+# 🚀 SAYONPH | Web Speed Booster & Monitoring Service
 
-A **full Vite Typecript + NodeJS ExpressJS + PosgreSQL template** with the required dependencies for development.
+Sayon PH 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [speedmate](https://github.com/Sayonnn/speedmate.git)
+📂 **GitHub Repo:** [sayonph](https://github.com/Sayonnn/sayonph.git)
 
 ---
 
@@ -23,8 +23,8 @@ A **full Vite Typecript + NodeJS ExpressJS + PosgreSQL template** with the requi
 ## 📧 Mail Credentials
 
 ```txt
-Email: support@speedmate.com
-Email: noreply@speedmate.com
+Email: support@sayonph.com
+Email: noreply@sayonph.com
 Password: JudyDropship@19!
 ```
 
@@ -33,8 +33,8 @@ Password: JudyDropship@19!
 ## 📧 System Default Credentials
 
 ```txt
-admin: admin | speedmate19!
-client: speedmate | speedmate19!
+admin: admin | sayonph19!
+client: sayonph | sayonph19!
 ```
 
 ---
@@ -87,12 +87,12 @@ Routes → Controllers → Services → Utils
 Run the following command to start PostgreSQL with Docker:
 
 ```bash
-docker run --name db_speedmate \
-  -e POSTGRES_USER=speedmate \
-  -e POSTGRES_PASSWORD=speedmate19! \
-  -e POSTGRES_DB=db_speedmate \
+docker run --name db_sayonph \
+  -e POSTGRES_USER=sayonph \
+  -e POSTGRES_PASSWORD=sayonph19! \
+  -e POSTGRES_DB=db_sayonph \
   -p 5432:5432 \
-  -v db_speedmate_data:/var/lib/postgresql/data \
+  -v db_sayonph_data:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
