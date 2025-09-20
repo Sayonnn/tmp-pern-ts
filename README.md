@@ -56,7 +56,7 @@ cd frontend && npm i && npm run dev
 
 ## 🔄 Reusing the Project
 
-1. Update all appname to your app name
+1. Update all appname to your desired name
 2. Update frontend env.development and env.production
 3. Update database name on [ scripts/create_tables.sh ] and [ scripts/export_db.sh ] (APP_NAME | DB_ABBR)
 4. Update backend env or global naming
