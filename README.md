@@ -1,6 +1,6 @@
 ---
 
-# 🚀 SayonPh is a medium e commerce site for famiily business
+# 🚀 PERN template ( with auth ) + TS + Docker | use if you want built in auth with postgreSQL database
 
 SayonPh 🇵🇭 | Professional and extraordinary web portfolio
 
@@ -95,7 +95,7 @@ docker run --name db_sayonph \
   -e POSTGRES_PASSWORD=sayonph19! \
   -e POSTGRES_DB=db_sayonph \
   -p 5432:5432 \
-  -v db_judyhub_data:/var/lib/postgresql/data \
+  -v db_sayonph_data:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
