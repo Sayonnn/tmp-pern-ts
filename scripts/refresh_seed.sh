@@ -2,8 +2,8 @@
 # scripts/refresh_seed.sh
 
 # Name of your Postgres container (must match docker-compose.yml)
-APP_NAME="sayonph"  
-DB_ABBR="sph"
+APP_NAME="appname"  
+DB_ABBR=""
 CONTAINER_NAME=db_${APP_NAME}
 DB_USER=${APP_NAME}
 DB_NAME=db_${APP_NAME}

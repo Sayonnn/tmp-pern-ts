@@ -5,8 +5,8 @@
 # -----------------------------
 
 # Change these variables to match your environment
-APP_NAME="sayonph"  
-DB_ABBR="sph"
+APP_NAME=""  
+DB_ABBR=""
 DB_NAME="db_${APP_NAME}"
 DB_USER="${APP_NAME}"
 DB_PASSWORD="${APP_NAME}19!"
@@ -105,8 +105,8 @@ CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_login_history_date ON ${DB_ABBR}_login
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_admins (username, email, password, super_admin, permissions, role)
 VALUES (
-    'sayonph',
-    'admin@sayonph.com',
+    'appname',
+    'admin@appname.com',
     'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
     true,
     '[4,3,2]'::jsonb,
@@ -118,8 +118,8 @@ VALUES (
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_clients (username, email, password, role, provider, is_verified)
 VALUES (
-    'sayonph',
-    'client@sayonph.com',
+    'appname',
+    'client@appname.com',
     'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
     'client',
     'local',

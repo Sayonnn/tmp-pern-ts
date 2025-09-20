@@ -2,9 +2,9 @@
 
 # 🚀 PERN template ( with auth ) + TS + Docker | use if you want built in auth with postgreSQL database
 
-SayonPh 🇵🇭 | Professional and extraordinary web portfolio
+appname 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [sayonph](https://github.com/Sayonnn/sayonph.git)
+📂 **GitHub Repo:** [appname](https://github.com/yourusername/appname.git)
 
 ---
 
@@ -23,9 +23,9 @@ SayonPh 🇵🇭 | Professional and extraordinary web portfolio
 ## 📧 Mail Credentials
 
 ```txt
-Email: support@sayonph.com
-Email: noreply@sayonph.com
-Password: Sayonph19!
+Email: support@appname.com
+Email: noreply@appname.com
+Password: Appname19!
 ```
 
 ---
@@ -33,8 +33,8 @@ Password: Sayonph19!
 ## 📧 System Default Credentials
 
 ```txt
-admin: admin | sayonph19!
-client: sayonph | sayonph19!
+admin: admin | appname19!
+client: appname | appname19!
 ```
 
 ---
@@ -56,16 +56,17 @@ cd frontend && npm i && npm run dev
 
 ## 🔄 Reusing the Project
 
-1. Update frontend env.development and env.production
-2. Update database name on [ scripts/create_tables.sh ] and [ scripts/export_db.sh ] (APP_NAME | DB_ABBR)
-3. Update backend env or global naming
-4. Update Dockerfiles ( optional )
-5. Update api.service.ts ( optional )
-6. Update docker-compose.yml ( optional )
-7. Update .github/workflows/main.yml ( optional )
-8. Update frontend nginx.conf ( optional )
-9. Update ports if needed
-10. Update all sayonph to your app name
+1. Update all appname to your app name
+2. Update frontend env.development and env.production
+3. Update database name on [ scripts/create_tables.sh ] and [ scripts/export_db.sh ] (APP_NAME | DB_ABBR)
+4. Update backend env or global naming
+5. Update Dockerfiles ( optional )
+6. Update api.service.ts ( optional )
+7. Update docker-compose.yml ( optional )
+8. Update .github/workflows/main.yml ( optional )
+9. Update frontend nginx.conf ( optional )
+10. Update ports if needed
+
 
 ---
 
@@ -90,12 +91,12 @@ Routes → Controllers → Services → Utils
 Run the following command to start PostgreSQL with Docker:
 
 ```bash
-docker run --name db_sayonph \
-  -e POSTGRES_USER=sayonph \
-  -e POSTGRES_PASSWORD=sayonph19! \
-  -e POSTGRES_DB=db_sayonph \
+docker run --name db_appname \
+  -e POSTGRES_USER=appname \
+  -e POSTGRES_PASSWORD=appname19! \
+  -e POSTGRES_DB=db_appname \
   -p 5432:5432 \
-  -v db_sayonph_data:/var/lib/postgresql/data \
+  -v db_appname_data:/var/lib/postgresql/data \
   -d postgres:16
 ```
 
