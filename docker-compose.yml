@@ -1,17 +1,17 @@
 services:
   backend:
     build: ./backend
-    container_name: backend-service
-    # image: dualnoiz/speedmate-backend:latest
+    container_name: appname-backend-service
+    # image: dualnoiz/appname-backend:latest
     ports: # remove on production
       - "5001:5000"
     environment:
       - PORT=5000
       - FRONTEND_PORT=8001
       - NODE_ENV=production
-      - DB_USER=speedmate
-      - DB_PASSWORD=speedmate19!
-      - DB_NAME=db_speedmate
+      - DB_USER=appname
+      - DB_PASSWORD=appname19!
+      - DB_NAME=db_appname
       - DB_HOST=postgres   # inside docker network, service name = host
       - DB_PORT=5432
     depends_on:
@@ -19,8 +19,8 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: frontend-service
-    # image: dualnoiz/speedmate-frontend:latest
+    container_name: appname-frontend-service
+    # image: dualnoiz/appname-frontend:latest
     ports: # remove on production
       - "8001:80"
       # - "80:80"       # only frontend exposed
@@ -30,17 +30,17 @@ services:
 
   postgres:
     image: postgres:16
-    container_name: db_speedmate
+    container_name: db_appname
     restart: always
     ports: # remove on production
-      - "5432:5432"
+      - "5433:5432"
     environment:
-      POSTGRES_USER: speedmate
-      POSTGRES_PASSWORD: speedmate19!
-      POSTGRES_DB: db_speedmate
+      POSTGRES_USER: appname
+      POSTGRES_PASSWORD: appname19!
+      POSTGRES_DB: db_appname
     volumes:
-      - db_speedmate_data:/var/lib/postgresql/data
-      - ./scripts/init/speedmate.sql:/docker-entrypoint-initdb.d/speedmate.sql
+      - db_appname_data:/var/lib/postgresql/data
+      - ./scripts/init/appname.sql:/docker-entrypoint-initdb.d/appname.sql
 
 volumes:
-  db_speedmate_data:
+  db_appname_data:
