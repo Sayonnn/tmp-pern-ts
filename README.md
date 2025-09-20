@@ -63,6 +63,9 @@ cd frontend && npm i && npm run dev
 5. Update api.service.ts ( optional )
 6. Update docker-compose.yml ( optional )
 7. Update .github/workflows/main.yml ( optional )
+8. Update frontend nginx.conf ( optional )
+9. Update ports if needed
+10. Update all sayonph to your app name
 
 ---
 

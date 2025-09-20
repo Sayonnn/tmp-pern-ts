@@ -1,7 +1,7 @@
 services:
   backend:
     build: ./backend
-    container_name: backend-service
+    container_name: sayonph-backend-service
     # image: dualnoiz/sayonph-backend:latest
     ports: # remove on production
       - "5001:5000"
@@ -19,7 +19,7 @@ services:
 
   frontend:
     build: ./frontend
-    container_name: frontend-service
+    container_name: sayonph-frontend-service
     # image: dualnoiz/sayonph-frontend:latest
     ports: # remove on production
       - "8001:80"
@@ -33,7 +33,7 @@ services:
     container_name: db_sayonph
     restart: always
     ports: # remove on production
-      - "5432:5432"
+      - "5433:5432"
     environment:
       POSTGRES_USER: sayonph
       POSTGRES_PASSWORD: sayonph19!
