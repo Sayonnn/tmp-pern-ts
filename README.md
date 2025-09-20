@@ -1,10 +1,10 @@
 ---
 
-# 🚀 JudyHub is a medium e commerce site for famiily business
+# 🚀 SayonPh is a medium e commerce site for famiily business
 
-JudyHub 🇵🇭 | Professional and extraordinary web portfolio
+SayonPh 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [judyhub](https://github.com/Sayonnn/judyhub.git)
+📂 **GitHub Repo:** [sayonph](https://github.com/Sayonnn/sayonph.git)
 
 ---
 
@@ -23,9 +23,9 @@ JudyHub 🇵🇭 | Professional and extraordinary web portfolio
 ## 📧 Mail Credentials
 
 ```txt
-Email: support@judyhub.com
-Email: noreply@judyhub.com
-Password: JudyDropship@19!
+Email: support@sayonph.com
+Email: noreply@sayonph.com
+Password: Sayonph19!
 ```
 
 ---
@@ -33,8 +33,8 @@ Password: JudyDropship@19!
 ## 📧 System Default Credentials
 
 ```txt
-admin: admin | judyhub19!
-client: judyhub | judyhub19!
+admin: admin | sayonph19!
+client: sayonph | sayonph19!
 ```
 
 ---
@@ -87,10 +87,10 @@ Routes → Controllers → Services → Utils
 Run the following command to start PostgreSQL with Docker:
 
 ```bash
-docker run --name db_judyhub \
-  -e POSTGRES_USER=judyhub \
-  -e POSTGRES_PASSWORD=judyhub19! \
-  -e POSTGRES_DB=db_judyhub \
+docker run --name db_sayonph \
+  -e POSTGRES_USER=sayonph \
+  -e POSTGRES_PASSWORD=sayonph19! \
+  -e POSTGRES_DB=db_sayonph \
   -p 5432:5432 \
   -v db_judyhub_data:/var/lib/postgresql/data \
   -d postgres:16

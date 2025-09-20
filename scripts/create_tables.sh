@@ -5,8 +5,8 @@
 # -----------------------------
 
 # Change these variables to match your environment
-APP_NAME="speedmate"  
-DB_ABBR="spm"
+APP_NAME="sayonph"  
+DB_ABBR="sph"
 DB_NAME="db_${APP_NAME}"
 DB_USER="${APP_NAME}"
 DB_PASSWORD="${APP_NAME}19!"
@@ -105,8 +105,8 @@ CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_login_history_date ON ${DB_ABBR}_login
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_admins (username, email, password, super_admin, permissions, role)
 VALUES (
-    'speedmate',
-    'admin@speedmate.com',
+    'sayonph',
+    'admin@sayonph.com',
     'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
     true,
     '[4,3,2]'::jsonb,
@@ -118,8 +118,8 @@ VALUES (
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_clients (username, email, password, role, provider, is_verified)
 VALUES (
-    'client',
-    'client@speedmate.com',
+    'sayonph',
+    'client@sayonph.com',
     'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
     'client',
     'local',
