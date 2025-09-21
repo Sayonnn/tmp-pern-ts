@@ -3,7 +3,7 @@
 
 # Name of your Postgres container (must match docker-compose.yml)
 APP_NAME="appname"  
-DB_ABBR=""
+DB_ABBR="app"
 CONTAINER_NAME=db_${APP_NAME}
 DB_USER=${APP_NAME}
 DB_NAME=db_${APP_NAME}

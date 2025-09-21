@@ -25,9 +25,20 @@ client: appname | appname19!
 
 ---
 
-## 🛠️ Setup Steps
+## 🔄 Reusing the Project
 
-### After Cloning ( REQUIRED )
+1. Replace all occurrences of `appname` with your project name.
+2. Update database name in:
+   * `scripts/create_tables.sh` (`APP_NAME` | `DB_ABBR`)
+   * `scripts/refresh_seed.sh` (`APP_NAME` | `DB_ABBR`)
+3. Update backend `.env`
+4. Update frontend `.env`
+5. Update Dockerfiles if needed.
+6. Update frontend `api.service.ts` if needed.
+7. Update `docker-compose.yml` if needed.
+8. Update `.github/workflows/main.yml` if needed.
+9. Update frontend `nginx.conf` if using custom config.
+10. Adjust ports if necessary.
 
 ```bash
 # Start Docker
@@ -38,24 +49,6 @@ docker compose up --build
 cd frontend && npm i 
 cd backend && npm i
 ```
-
----
-
-## 🔄 Reusing the Project
-
-1. Replace all occurrences of `appname` with your project name.
-2. Update database name in:
-
-   * `scripts/create_tables.sh`
-   * `scripts/export_db.sh` (`APP_NAME` | `DB_ABBR`)
-3. Update backend `.env`
-4. Update frontend `.env`
-5. Update Dockerfiles if needed.
-6. Update frontend `api.service.ts` if needed.
-7. Update `docker-compose.yml` if needed.
-8. Update `.github/workflows/main.yml` if needed.
-9. Update frontend `nginx.conf` if using custom config.
-10. Adjust ports if necessary.
 
 ---
 
