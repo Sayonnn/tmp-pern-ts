@@ -2,7 +2,7 @@
 
 `appname` 🇵🇭 | Professional and extraordinary web portfolio
 
-📂 **GitHub Repo:** [appname](https://github.com/yourusername/appname.git)
+📂 **GitHub Repo:** [appname](https://github.com/Sayonnn/tmp-pern-ts.git)
 
 ---
 
