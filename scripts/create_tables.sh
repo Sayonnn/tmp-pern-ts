@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS ${DB_ABBR}_clients (
     username VARCHAR(50) UNIQUE,
     email VARCHAR(100) UNIQUE NOT NULL,
     password VARCHAR(255) NOT NULL,
+    permissions JSONB DEFAULT '{}',
     role VARCHAR(20) NOT NULL DEFAULT 'client', -- only 'client'
     provider VARCHAR(50) NOT NULL DEFAULT 'local',  -- 'local', 'google', 'sso', 'github'
     provider_id VARCHAR(255),                        -- social login id
