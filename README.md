@@ -8,18 +8,6 @@ appname 🇵🇭 | Professional and extraordinary web portfolio
 
 ---
 
-## 🔑 Admin Notes
-
-* The admin `permissions` column is of type **JSONB**.
-* It accepts an **array of numbers** to represent permissions (e.g., `[4, 2, 1]`).
-* Permission values:
-
-  * `4 = read`
-  * `2 = write`
-  * `1 = access`
-
----
-
 ## 📧 Mail Credentials
 
 ```txt
