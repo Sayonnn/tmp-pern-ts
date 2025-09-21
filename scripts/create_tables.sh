@@ -5,8 +5,8 @@
 # -----------------------------
 
 # Change these variables to match your environment
-APP_NAME=""  
-DB_ABBR=""
+APP_NAME="appname"  
+DB_ABBR="app"
 DB_NAME="db_${APP_NAME}"
 DB_USER="${APP_NAME}"
 DB_PASSWORD="${APP_NAME}19!"

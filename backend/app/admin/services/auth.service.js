@@ -1,6 +1,7 @@
 import { startQuery } from "../../utils/query.js";
 import { comparePassword, hashPassword } from "../../utils/hash.js";
 import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
+import { config } from "../../configs/index.js";
 
 export const registerAdmin = async (
   email,
@@ -11,7 +12,7 @@ export const registerAdmin = async (
   role = "admin"   
 ) => {
     /** Check Email Exists */
-    const checkEmailSql = `SELECT id FROM spm_admins WHERE email = $1`;
+    const checkEmailSql = `SELECT id FROM ${config.db.abbr}_admins WHERE email = $1`;
     const existingEmail = await startQuery(checkEmailSql, [email]);
 
     if(existingEmail.rows.length > 0){
@@ -19,7 +20,7 @@ export const registerAdmin = async (
     }
 
     /** Check Username Exists */
-    const checkUsernameSql = "SELECT id FROM spm_admins WHERE username = $1";
+    const checkUsernameSql = `SELECT id FROM ${config.db.abbr}_admins WHERE username = $1`;
     const existingUsername = await startQuery(checkUsernameSql, [username]);
   
     if (existingUsername.rows.length > 0) {
@@ -31,7 +32,7 @@ export const registerAdmin = async (
 
     /** Save Admin */
     const sql = `
-      INSERT INTO spm_admins (email, password, super_admin, username, permissions, role)
+      INSERT INTO ${config.db.abbr}_admins (email, password, super_admin, username, permissions, role)
       VALUES ($1, $2, $3, $4, $5, $6)
       RETURNING id, email, super_admin, username, permissions, role, created_at
     `;
@@ -48,7 +49,7 @@ export const registerAdmin = async (
 
 export const loginAdmin = async (username, password) => {
     /** Check Username Exists */
-    const checkUserSql = "SELECT id, email, password, permissions, super_admin, username, role, created_at FROM spm_admins WHERE username = $1";
+    const checkUserSql = "SELECT id, email, password, permissions, super_admin, username, role, created_at FROM _admins WHERE username = $1";
     const existing = await startQuery(checkUserSql, [username]);
   
     if (existing.rows.length === 0) {

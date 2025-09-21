@@ -8,7 +8,8 @@ export const config = {
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        port: process.env.DB_PORT
+        port: process.env.DB_PORT,
+        abbr: process.env.DB_ABBR
     },
     jwt:{
         secret: process.env.JWT_SECRET,

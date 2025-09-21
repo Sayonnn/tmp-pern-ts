@@ -33,7 +33,7 @@ services:
     container_name: db_appname
     restart: always
     ports: # remove on production
-      - "5433:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USER: appname
       POSTGRES_PASSWORD: appname19!

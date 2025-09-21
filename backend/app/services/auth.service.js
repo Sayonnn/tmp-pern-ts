@@ -1,8 +1,9 @@
 import { startQuery } from "../utils/query.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import { hashPassword, comparePassword } from "../utils/hash.js";
+import { config } from "../configs/index.js";
 
-/** 
+/**  
  * Register a new client
  * @param {string} email 
  * @param {string} password
@@ -11,14 +12,14 @@ import { hashPassword, comparePassword } from "../utils/hash.js";
  */
 export async function registerClient(email, password, username) {
   // Check if email already exists
-  const checkEmailSql = "SELECT id FROM spm_clients WHERE email = $1";
+  const checkEmailSql = `SELECT id FROM ${config.db.abbr}_clients WHERE email = $1`;
   const existingEmail = await startQuery(checkEmailSql, [email]);
 
   if (existingEmail.rows.length > 0) {
     throw { field: "email", message: "This email is already registered." };
   }
 
-  const checkUsernameSql = "SELECT id FROM spm_clients WHERE username = $1";
+  const checkUsernameSql = `SELECT id FROM ${config.db.abbr}_clients WHERE username = $1`;
   const existingUsername = await startQuery(checkUsernameSql, [username]);
 
   if (existingUsername.rows.length > 0) {
@@ -30,7 +31,7 @@ export async function registerClient(email, password, username) {
 
   /** Save Client (force role = 'client') */
   const sql = `
-    INSERT INTO spm_clients (email, password, username, role)
+    INSERT INTO ${config.db.abbr}_clients (email, password, username, role)
     VALUES ($1, $2, $3, 'client')
     RETURNING id, email, role, username, created_at
   `;
@@ -52,7 +53,7 @@ export async function registerClient(email, password, username) {
  * @returns {Object} user, accessToken, refreshToken
  */
 export async function loginClient(username, password) {
-  const checkUserSql = "SELECT id, email, password, role, username, created_at FROM spm_clients WHERE username = $1";
+  const checkUserSql = `SELECT id, email, password, role, username, created_at FROM ${config.db.abbr}_clients WHERE username = $1`;
   const existing = await startQuery(checkUserSql, [username]);
 
   if (existing.rows.length === 0) {
