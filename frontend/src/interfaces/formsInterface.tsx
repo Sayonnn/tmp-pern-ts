@@ -8,4 +8,5 @@ export interface TextInputProps {
   placeholder?: string;
   error?: string | null;
   hidden?: boolean;
+  disabled?: boolean;
 }

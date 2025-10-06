@@ -38,8 +38,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             });
           
             await refreshData(decoded.role);
-          }
-          else {
+          }else {
             logout();
           }
         }
