@@ -1,18 +1,29 @@
 import express from "express";
-import { startClientRegistration, startClientLogin, refreshClientAccessToken, refreshClientInformation } from "../controllers/auth.controller.js";
+import {
+  startClientRegistration,
+  startClientLogin,
+  forgotClientPassword,
+  resetClientPassword,
+  twoFactorAuthenticationSetup,
+  twoFactorAuthenticationVerify,
+} from "../controllers/auth.controller.js";
 
 const router = express.Router();
 
-/** REGISTER (client only) */
+/** REGISTER (client) */
 router.post("/register", startClientRegistration);
 
-/** LOGIN (client only) */
+/** LOGIN (client) */
 router.post("/login", startClientLogin);
 
-/** Refresh Token (client only) */
-router.post("/refresh-access-token", refreshClientAccessToken);
+/** FORGOT PASSWORD (client) */
+router.post("/forgot-password", forgotClientPassword);
 
-/** Refresh Client Information (client only) */
-router.post("/refresh-client-information", refreshClientInformation);
+/** RESET PASSWORD (client) */
+router.post("/reset-password", resetClientPassword);
+
+/** 2FA (client) */
+router.post("/2fa/setup", twoFactorAuthenticationSetup);
+router.post("/2fa/verify", twoFactorAuthenticationVerify);
 
 export default router;
