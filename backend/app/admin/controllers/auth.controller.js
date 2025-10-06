@@ -1,5 +1,5 @@
 import { errorResponse, successResponse } from "../../utils/response.js";
-import { registerAdmin, loginAdmin, forgotAdminPassword, resetAdminPassword, setupAdmin2FA, verifyAdmin2FA } from "../services/auth.service.js";
+import { registerAdmin, loginAdmin, forgotPassword, resetPassword, setupAdmin2FA, verifyAdmin2FA } from "../services/auth.service.js";
 import { generateAccessToken, verifyToken } from "../../utils/jwt.js";
 import { saveCookie } from "../../utils/cookies.js";
 
@@ -135,7 +135,7 @@ export const forgotAdminPassword = async (req, res) => {
     const { email } = req.body;
     if (!email) return errorResponse(res, 400, "Email is required");
 
-    const result = await forgotAdminPasswordService(email);
+    const result = await forgotPassword(email);
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Forgot Password Error:", err);
@@ -152,7 +152,7 @@ export const resetAdminPassword = async (req, res) => {
     if (!token || !newPassword)
       return errorResponse(res, 400, "Token and new password required");
 
-    const result = await resetAdminPasswordService(token, newPassword);
+    const result = await resetPassword(token, newPassword);
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Reset Password Error:", err);

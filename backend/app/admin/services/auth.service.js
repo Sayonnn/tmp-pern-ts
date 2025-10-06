@@ -81,7 +81,7 @@ export const loginAdmin = async (username, password) => {
 /* ===========================================
  * Forgot Password (admin)
  * =========================================== */
-export const forgotAdminPasswordService = async (email) => {
+export const forgotPassword = async (email) => {
   const sql = `SELECT id, username, email FROM ${config.db.abbr}_admins WHERE email = $1`;
   const result = await startQuery(sql, [email]);
 
@@ -107,7 +107,7 @@ export const forgotAdminPasswordService = async (email) => {
 /* ===========================================
  * Reset Password (admin)
  * =========================================== */
-export const resetAdminPasswordService = async (token, newPassword) => {
+export const resetPassword = async (token, newPassword) => {
   const decoded = jwt.verify(token, config.jwt.secret);
 
   const sql = `SELECT id FROM ${config.db.abbr}_admins WHERE email = $1`;

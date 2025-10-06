@@ -1,4 +1,4 @@
-import { registerClient, loginClient, forgotClientPassword, resetClientPassword, setupClient2FA, verifyClient2FA } from "../services/auth.service.js";
+import { registerClient, loginClient, forgotPassword, resetPassword, setupClient2FA, verifyClient2FA } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
 import { generateAccessToken, verifyToken } from "../utils/jwt.js";
 import { saveCookie } from "../utils/cookies.js";
@@ -104,7 +104,7 @@ export const forgotClientPassword = async (req, res) => {
     const { email } = req.body;
     if (!email) return errorResponse(res, 400, "Email required");
 
-    const result = await forgotClientPasswordService(email);
+    const result = await forgotPassword(email);
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Forgot Password Error:", err);
@@ -121,7 +121,7 @@ export const resetClientPassword = async (req, res) => {
     if (!token || !newPassword)
       return errorResponse(res, 400, "Token and new password required");
 
-    const result = await resetClientPasswordService(token, newPassword);
+    const result = await resetPassword(token, newPassword);
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Reset Password Error:", err);

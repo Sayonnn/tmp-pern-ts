@@ -27,7 +27,7 @@ app.use("/api", indexRoutes);
 
 /** Index Route */
 app.get("/", (_, res) => {
-  res.json({ message: "Welcome to " + config.app.coolName + " | The number 1 website Performance booster and Web Monitoring Service" });
+  res.json({ message: "Welcome to " + config.app.coolName });
 });
 
 /** Test API Endpoint */

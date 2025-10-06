@@ -1,11 +1,11 @@
-import { startQuery } from "../../utils/query.js";
-import { comparePassword, hashPassword } from "../../utils/hash.js";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
-import { config } from "../../configs/index.js";
-import { generateTOTPSecret, verifyTOTP } from "../../utils/totp.js";
-import { generateQRCode } from "../../utils/qrcode.js";
+import { startQuery } from "../utils/query.js";
+import { comparePassword, hashPassword } from "../utils/hash.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
+import { config } from "../configs/index.js";
+import { generateTOTPSecret, verifyTOTP } from "../utils/totp.js";
+import { generateQRCode } from "../utils/qrcode.js";
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../../utils/mailer.js";
+import sendEmail  from "./mail.service.js";
 
 /* ===========================================
  * Register (client)
@@ -66,7 +66,7 @@ export const loginClient = async (username, password) => {
 /* ===========================================
  * Forgot Password (client)
  * =========================================== */
-export const forgotClientPasswordService = async (email) => {
+export const forgotPassword = async (email) => {
   const sql = `SELECT id, username, email FROM ${config.db.abbr}_clients WHERE email = $1`;
   const result = await startQuery(sql, [email]);
 
@@ -91,7 +91,7 @@ export const forgotClientPasswordService = async (email) => {
 /* ===========================================
  * Reset Password (client)
  * =========================================== */
-export const resetClientPasswordService = async (token, newPassword) => {
+export const resetPassword = async (token, newPassword) => {
   const decoded = jwt.verify(token, config.jwt.secret);
   const sql = `SELECT id FROM ${config.db.abbr}_clients WHERE email = $1`;
   const result = await startQuery(sql, [decoded.email]);
