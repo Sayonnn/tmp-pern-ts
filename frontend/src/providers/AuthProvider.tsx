@@ -9,11 +9,11 @@ import AdminService from "../admin/services/api.service";
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [initialized, setInitialized] = useState(false);
+  const [initialized, setInitialized] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
-  const [_, setLoadingUser] = useState(true);
+  const [_, setLoadingUser] = useState<boolean>(true);
 
   useEffect(() => {
     const initializeAuth = async () => {
@@ -27,18 +27,15 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setAccessToken(token);
             setIsAuthenticated(true);
           
-            setUser({
-              id: decoded.id,
-              email: decoded.email,
-              username: decoded.username,
-              role: decoded.role,
-              created_at: decoded.created_at,
-              permissions: decoded.permissions || [],
-              super_admin: decoded.super_admin || false,
-            });
+            console.log(decoded)
+            setUser(decoded);
           
             await refreshData(decoded.role);
           }else {
+            removeStorage("authToken");
+            setAccessToken(null);
+            setIsAuthenticated(false);
+            setUser(null);
             logout();
           }
         }
@@ -75,7 +72,7 @@ const login = async ({ username, password, role }: loginProcessArgsProps) => {
 
     return { status: true, message: res.message };
   } catch (error: any) {
-    return { status: false, message: error.message || "Login failed", field: error.field };
+    return { status: false, message: "Login failed" };
   }
 };
 
@@ -91,15 +88,15 @@ const refreshData = async (role: string) => {
       res = await ClientService.auth.refreshInformation();
     }
 
-    if (res.user) {
+    if (res && res.user) {
       console.log("Refreshed user data:", res);
       setUser(res.user);
-      return res.user;
+      return true;
     }
   } catch (err: any) {
     console.warn("Access token invalid or expired:", err);
     logout();
-    return null;
+    return false;
   } finally {
     setLoadingUser(false);
   }

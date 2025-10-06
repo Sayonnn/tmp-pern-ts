@@ -2,10 +2,12 @@ export interface User {
     id?: string;
     email: string;
     role: string;
-    exp?: number; 
     username: string;
     image?: File | Blob;
-    created_at?: string | null;
     permissions?: [number] | [];
     super_admin?: boolean;
+    is_verified?: boolean;
+    two_fa_enabled?: boolean;
+    updated_at?: string | null;
+    created_at?: string | null;
 }
