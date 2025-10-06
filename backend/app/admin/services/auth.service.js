@@ -90,9 +90,7 @@ export const forgotAdminPasswordService = async (email) => {
   }
 
   const user = result.rows[0];
-
   const resetToken = generateAccessToken(user);
-
   const resetLink = `${config.app.frontendUrl}/reset-password?token=${resetToken}`;
 
   await sendEmail({
@@ -139,7 +137,6 @@ export const setupAdmin2FA = async (username) => {
 
   // Create otpauth URL for QR generation ( fix also on frontend to recognize the path )
   const otpauthUrl = `otpauth://totp/appname (${username})?secret=${secret}&issuer=appname`;
-
   const qr = await generateQRCode(otpauthUrl);
 
   // Save secret to DB (so future logins can verify)

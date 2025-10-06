@@ -5,10 +5,14 @@ import Dashboard from "../pages/Dashboard";
 // import ResetPassword from "../pages/auth/ResetPassword";
 // import Setup2FA from "../pages/auth/Setup2FA";
 // import Verify2FA from "../pages/auth/Verify2FA";
+// import GoogleCallback from "../pages/auth/GoogleCallback";
 import NotFound from "../../pages/defaults/NotFound";
 
 import type { RouteConfigArray } from "../../interfaces/authInterface";
 
+/* ==========================================
+ * Route Configuration (Admin)
+ * ========================================== */
 export const routes: RouteConfigArray[] = [
   /* ============================
    * Auth Routes
@@ -26,7 +30,7 @@ export const routes: RouteConfigArray[] = [
   //   isProtected: false,
   // },
   // {
-  //   path: "/reset-password",
+  //   path: "/reset-password/:token",
   //   element: <ResetPassword />,
   //   role: "admin",
   //   isProtected: false,
@@ -46,6 +50,16 @@ export const routes: RouteConfigArray[] = [
   //   element: <Verify2FA />,
   //   role: "admin",
   //   isProtected: true, // verify after setup
+  // },
+
+  /* ============================
+   * Google OAuth Callback
+   * ============================ */
+  // {
+  //   path: "/auth/google/callback",
+  //   element: <GoogleCallback />,
+  //   role: "admin",
+  //   isProtected: false,
   // },
 
   /* ============================
