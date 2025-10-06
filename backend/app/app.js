@@ -6,10 +6,10 @@ import helmet from "helmet";
 import dotenv from "dotenv";
 dotenv.config();
 import cookieParser from "cookie-parser";
-
 import { pool } from "./configs/database.js";
 import { corsConfig } from "./configs/cors.js";
 import indexRoutes from "./routes/index.routes.js";
+import { limiter } from "./configs/rateLimiter.js";
 
 const app = express();
 
@@ -20,6 +20,7 @@ app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(limiter);
 
 /** Index Routes */
 app.use("/api", indexRoutes);
