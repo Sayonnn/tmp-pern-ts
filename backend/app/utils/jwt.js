@@ -1,47 +1,65 @@
 import jwt from "jsonwebtoken";
 import { config } from "../configs/index.js";
 
-/**
- * Generate an access token for a user
- * Expiry: 60 minutes
- * @param {Object} user - The user object
- * @returns {string} - The access token
- */
-export const generateAccessToken = (user) => {
-    if (!user) {
-        throw new Error("User not found");
-    }
+/* =========================================
+ * Helper: Build minimal + safe JWT payload
+ * ========================================= */
+const buildPayload = (user) => {
+  if (!user) throw new Error("User not provided for token generation.");
 
-    return jwt.sign(
-        {id: user.id, email: user.email, role: user.role,username: user.username,created_at: user.created_at,permissions: user.permissions || [], super_admin: user.super_admin || false}, 
-        config.jwt.secret, 
-        {expiresIn: config.jwt.access_token_expires_in, algorithm: config.jwt.algorithm}
-    );
-}
+  const payload = {
+    id: user.id,
+    username: user.username,
+    email: user.email,
+    role: user.role,
+    permissions: user.permissions || [],
+    super_admin: !!user.super_admin,
+    provider: user.provider || "local",
+    is_verified: !!user.is_verified,
+    twofa_enabled: !!user.twofa_enabled,
+    created_at: user.created_at,
+    updated_at: user.updated_at,
+  };
 
-/**
- * Generate a refresh token for a user
- * Expiry: 7 days
- * @param {Object} user - The user object
- * @returns {string} - The refresh token
- */
-export const generateRefreshToken = (user) => {
-    if (!user) {
-        throw new Error("User not found");
-    }
+  // Remove undefined values (cleanup)
+  for (const key in payload) {
+    if (payload[key] === undefined) delete payload[key];
+  }
 
-    return jwt.sign(
-      { id: user.id, email:user.email, role:user.role,username:user.username,created_at:user.created_at,permissions:user.permissions || [], super_admin:user.super_admin || false }, 
-      config.jwt.secret, 
-      { expiresIn: config.jwt.refresh_token_expires_in, algorithm: config.jwt.algorithm } 
-    );
-}
+  return payload;
+};
 
-/**
- * Verify Token
- * @param {string} token - The token to verify
- * @returns {Object} - The decoded token
- */
+/* =========================================
+ * Generate a JWT Token (generic)
+ * ========================================= */
+const generateToken = (user, expiresIn) => {
+  const payload = buildPayload(user);
+
+  return jwt.sign(payload, config.jwt.secret, {
+    expiresIn,
+    algorithm: config.jwt.algorithm || "HS256",
+  });
+};
+
+/* =========================================
+ * Access Token (default: 1h)
+ * ========================================= */
+export const generateAccessToken = (user) =>
+  generateToken(user, config.jwt.access_token_expires_in || "1h");
+
+/* =========================================
+ * Refresh Token (default: 7d)
+ * ========================================= */
+export const generateRefreshToken = (user) =>
+  generateToken(user, config.jwt.refresh_token_expires_in || "7d");
+
+/* =========================================
+ * Verify a JWT and return the decoded payload
+ * ========================================= */
 export const verifyToken = (token) => {
+  try {
     return jwt.verify(token, config.jwt.secret);
-}
+  } catch {
+    throw new Error("Invalid or expired token");
+  }
+};

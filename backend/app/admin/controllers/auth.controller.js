@@ -68,7 +68,7 @@ export const startAdminLogin = async (req, res) => {
 };
 
 /* ===========================================
- * Refresh an admin's access token
+ * Refresh an admin's access token ( not used )
  * =========================================== */
 export const refreshAdminAccessToken = async (req, res) => {
   try {
@@ -111,16 +111,9 @@ export const refreshAdminInformation = async (req, res) => {
     const decoded = verifyToken(accessToken);
 
     return successResponse(res, "Refresh successful", {
-      user: {
-        id: decoded.id,
-        email: decoded.email,
-        username: decoded.username,
-        role: decoded.role,
-        permissions: decoded.permissions,
-        super_admin: decoded.super_admin,
-        created_at: decoded.created_at
-      }
+      user: decoded
     });
+    
   } catch (err) {
     console.error("Refresh Token Error:", err);
     return errorResponse(res, 403, "Refresh failed. Please log in again.");

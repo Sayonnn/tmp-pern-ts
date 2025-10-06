@@ -46,7 +46,22 @@ export const registerClient = async (email, password, username) => {
  * Login (client)
  * =========================================== */
 export const loginClient = async (username, password) => {
-  const sql = `SELECT id, email, password, username, role, twofa_secret, created_at FROM ${config.db.abbr}_clients WHERE username = $1`;
+  const sql = `
+    SELECT 
+      id,
+      username,
+      email,
+      password,
+      role,
+      permissions,
+      is_verified,
+      twofa_enabled,
+      provider,
+      created_at,
+      updated_at
+    FROM ${config.db.abbr}_clients
+    WHERE username = $1
+  `;
   const result = await startQuery(sql, [username]);
 
   if (result.rowCount === 0)
@@ -56,6 +71,8 @@ export const loginClient = async (username, password) => {
   const isPasswordValid = await comparePassword(password, user.password);
   if (!isPasswordValid)
     throw { field: "password", message: "Incorrect password" };
+
+  delete user.password;
 
   const accessToken = generateAccessToken(user);
   const refreshToken = generateRefreshToken(user);

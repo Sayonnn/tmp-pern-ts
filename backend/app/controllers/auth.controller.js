@@ -40,7 +40,7 @@ export const startClientLogin = async (req, res) => {
 };
 
 /* ===========================================
- * Refresh client's access token using refresh token
+ * Refresh client's access token using refresh token ( not used )
  * =========================================== */
 export const refreshClientAccessToken = async (req, res) => {
   try {
@@ -78,7 +78,6 @@ export const refreshClientInformation = async (req, res) => {
   try {
     const accessToken = req.headers['authorization'].split(' ')[1];
 
-
     if (!accessToken) {
       return errorResponse(res, 401, "Access token missing. Please log in again.");
     }
@@ -87,8 +86,9 @@ export const refreshClientInformation = async (req, res) => {
     const decoded = verifyToken(accessToken);
     
     return successResponse(res, "Refresh successful", {
-      user: { id: decoded.id, email: decoded.email,username: decoded.username, role: decoded.role,created_at: decoded.created_at }
+      user: decoded
     });
+    
   } catch (err) {
     console.error("Refresh Token Error:", err);
 

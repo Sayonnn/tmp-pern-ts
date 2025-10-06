@@ -56,8 +56,24 @@ export const registerAdmin = async (
  * =========================================== */
 export const loginAdmin = async (username, password) => {
     /** Check Username Exists */
-    const checkUserSql = `SELECT id, email, password, permissions, super_admin, username, role, created_at FROM ${config.db.abbr}_admins WHERE username = $1`;
-    const existing = await startQuery(checkUserSql, [username]);
+    const sql = `
+      SELECT 
+        id,
+        username,
+        email,
+        password,
+        role,
+        super_admin,
+        permissions,
+        provider,
+        is_verified,
+        twofa_enabled,
+        created_at,
+        updated_at
+      FROM ${config.db.abbr}_admins
+      WHERE username = $1
+    `;
+    const existing = await startQuery(sql, [username]);
   
     if (existing.rows.length === 0) {
       throw { field: "username", message: "This username does not exist." };
@@ -70,6 +86,8 @@ export const loginAdmin = async (username, password) => {
     if(!isPasswordValid){
         throw { field: "password", message: "Incorrect password" };
     }
+    
+    delete user.password;
 
     /** Generate Tokens */
     const accessToken = generateAccessToken(user);
