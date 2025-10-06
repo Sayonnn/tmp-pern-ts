@@ -1,10 +1,9 @@
 #!/bin/bash
 
 # -----------------------------
-# PostgreSQL Database Setup Script (Optimized, ${DB_ABBR}_clients + ${DB_ABBR}_admins separate)
+# PostgreSQL Database Setup Script (Enhanced for 2FA, CAPTCHA, OAuth)
 # -----------------------------
 
-# Change these variables to match your environment
 APP_NAME="appname"  
 DB_ABBR="app"
 DB_NAME="db_${APP_NAME}"
@@ -14,63 +13,67 @@ DB_CONTAINER="db_${APP_NAME}"
 DB_HOST="postgres"
 DB_PORT="5432"
 
-# Export password so psql can use it
 export PGPASSWORD=$DB_PASSWORD
 
-echo "Dropping old ${DB_ABBR}_ tables (if any) and creating optimized tables in database '$DB_NAME'..."
+echo "Dropping old ${DB_ABBR}_ tables (if any) and creating enhanced tables in database '$DB_NAME'..."
 
 docker exec -i $DB_CONTAINER psql -U $DB_USER -d $DB_NAME <<EOSQL
 
--- -----------------------------
--- Drop existing tables (order matters due to FKs)
--- -----------------------------
+-- Drop existing tables
 DROP TABLE IF EXISTS ${DB_ABBR}_login_history CASCADE;
 DROP TABLE IF EXISTS ${DB_ABBR}_refresh_tokens CASCADE;
 DROP TABLE IF EXISTS ${DB_ABBR}_admins CASCADE;
 DROP TABLE IF EXISTS ${DB_ABBR}_clients CASCADE;
 
 -- -----------------------------
--- Clients Table
+-- Clients Table (with 2FA, OAuth, CAPTCHA)
 -- -----------------------------
 CREATE TABLE IF NOT EXISTS ${DB_ABBR}_clients (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
+    password VARCHAR(255),
     permissions JSONB DEFAULT '{}',
-    role VARCHAR(20) NOT NULL DEFAULT 'client', -- only 'client'
-    provider VARCHAR(50) NOT NULL DEFAULT 'local',  -- 'local', 'google', 'sso', 'github'
-    provider_id VARCHAR(255),                        -- social login id
-    is_verified BOOLEAN DEFAULT FALSE,
+    role VARCHAR(20) NOT NULL DEFAULT 'client',
+    provider VARCHAR(50) NOT NULL DEFAULT 'local',        -- local | google | github | sso
+    provider_id VARCHAR(255),                              -- social login id
+    is_verified BOOLEAN DEFAULT FALSE,                     -- email verified
+    twofa_secret VARCHAR(255),                             -- speakeasy secret
+    twofa_enabled BOOLEAN DEFAULT FALSE,                   -- 2FA active?
+    recaptcha_score DECIMAL(5,2),                          -- optional log of reCAPTCHA result
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Indexes for fast lookups
 CREATE UNIQUE INDEX IF NOT EXISTS idx_${DB_ABBR}_clients_email ON ${DB_ABBR}_clients(email);
 CREATE UNIQUE INDEX IF NOT EXISTS idx_${DB_ABBR}_clients_provider_id ON ${DB_ABBR}_clients(provider, provider_id);
 CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_clients_role ON ${DB_ABBR}_clients(role);
 
 -- -----------------------------
--- Admins Table (completely separate from clients)
+-- Admins Table (with 2FA + OAuth)
 -- -----------------------------
 CREATE TABLE IF NOT EXISTS ${DB_ABBR}_admins (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE,
     email VARCHAR(100) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL DEFAULT 'admin', -- only 'admin'
+    password VARCHAR(255),
+    role VARCHAR(20) NOT NULL DEFAULT 'admin',
     super_admin BOOLEAN DEFAULT FALSE,
     permissions JSONB DEFAULT '{}',
+    provider VARCHAR(50) NOT NULL DEFAULT 'local',        -- local | google | github
+    provider_id VARCHAR(255),
+    is_verified BOOLEAN DEFAULT TRUE,
+    twofa_secret VARCHAR(255),
+    twofa_enabled BOOLEAN DEFAULT FALSE,
+    recaptcha_score DECIMAL(5,2),
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Index for super admins
 CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_admins_super ON ${DB_ABBR}_admins(super_admin);
 
 -- -----------------------------
--- Refresh Tokens Table (linked only to clients)
+-- Refresh Tokens Table (clients only)
 -- -----------------------------
 CREATE TABLE IF NOT EXISTS ${DB_ABBR}_refresh_tokens (
     id SERIAL PRIMARY KEY,
@@ -81,47 +84,41 @@ CREATE TABLE IF NOT EXISTS ${DB_ABBR}_refresh_tokens (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Index for fast token lookup
 CREATE UNIQUE INDEX IF NOT EXISTS idx_${DB_ABBR}_refresh_token ON ${DB_ABBR}_refresh_tokens(token);
-CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_refresh_token_client ON ${DB_ABBR}_refresh_tokens(client_id);
-CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_refresh_token_type ON ${DB_ABBR}_refresh_tokens(token_type);
 
 -- -----------------------------
--- Login History Table (linked only to clients)
+-- Login History Table
 -- -----------------------------
 CREATE TABLE IF NOT EXISTS ${DB_ABBR}_login_history (
     id SERIAL PRIMARY KEY,
     client_id INT NOT NULL REFERENCES ${DB_ABBR}_clients(id) ON DELETE CASCADE,
     login_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ip_address VARCHAR(50),
-    user_agent TEXT
+    user_agent TEXT,
+    login_method VARCHAR(50) DEFAULT 'local'
 );
 
--- Index to speed up recent login queries
-CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_login_history_client ON ${DB_ABBR}_login_history(client_id);
-CREATE INDEX IF NOT EXISTS idx_${DB_ABBR}_login_history_date ON ${DB_ABBR}_login_history(login_at DESC);
-
 -- -----------------------------
--- Insert default admin with permissions array [4,3,2] as JSONB
+-- Insert Default Admin
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_admins (username, email, password, super_admin, permissions, role)
 VALUES (
     'appname',
     'admin@appname.com',
-    'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
+    'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S', -- hashed
     true,
     '[4,3,2]'::jsonb,
     'admin'
 );
 
 -- -----------------------------
--- Insert default client
+-- Insert Default Client
 -- -----------------------------
 INSERT INTO ${DB_ABBR}_clients (username, email, password, role, provider, is_verified)
 VALUES (
     'appname',
     'client@appname.com',
-    'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',  -- Replace with hash from Node.js output
+    'a2UvvzUwfaMxvgj3i.9VjeOnocpGmK/Ht7cyN04P7wRdfa7LlT6f2S',
     'client',
     'local',
     true
@@ -129,4 +126,4 @@ VALUES (
 
 EOSQL
 
-echo "✅ All old ${DB_ABBR}_ tables dropped and new optimized tables (${DB_ABBR}_clients + ${DB_ABBR}_admins separate) created successfully!"
+echo "✅ All tables created successfully with 2FA, OAuth, CAPTCHA-ready schema!"
