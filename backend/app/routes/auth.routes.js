@@ -6,6 +6,8 @@ import {
   resetClientPassword,
   twoFactorAuthenticationSetup,
   twoFactorAuthenticationVerify,
+  refreshClientAccessToken,
+  refreshClientInformation,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -15,6 +17,12 @@ router.post("/register", startClientRegistration);
 
 /** LOGIN (client) */
 router.post("/login", startClientLogin);
+
+/** Refresh Token (client) */
+router.post("/refresh-access-token", refreshClientAccessToken);
+
+/** Refresh Client Information (client) */
+router.post("/refresh-client-information", refreshClientInformation);
 
 /** FORGOT PASSWORD (client) */
 router.post("/forgot-password", forgotClientPassword);
