@@ -9,7 +9,7 @@
     "dev": "nodemon app/bin/www.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Sayon PH",
   "license": "ISC",
   "dependencies": {
     "bcrypt": "^6.0.0",
