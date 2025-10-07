@@ -8,6 +8,7 @@ import {
   twoFactorAuthenticationVerify,
   refreshClientAccessToken,
   refreshClientInformation,
+  startClientLogout,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -17,6 +18,9 @@ router.post("/register", startClientRegistration);
 
 /** LOGIN (client) */
 router.post("/login", startClientLogin);
+
+/** LOGOUT (client) */
+router.post("/logout", startClientLogout);
 
 /** Refresh Token (client) */
 router.post("/refresh-access-token", refreshClientAccessToken);

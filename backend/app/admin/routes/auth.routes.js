@@ -8,6 +8,7 @@ import {
   resetAdminPassword,
   twoFactorAuthenticationSetup,
   twoFactorAuthenticationVerify,
+  startAdminLogout,
 } from "../controllers/auth.controller.js";
 
 const router = express.Router();
@@ -18,7 +19,10 @@ router.post("/register", startAdminRegistration);
 /** LOGIN (admin only) */
 router.post("/login", startAdminLogin);
 
-/** Refresh Token (admin only) */
+/** LOGOUT (admin only) */
+router.post("/logout", startAdminLogout);
+
+/** Refresh Token (admin only) */ 
 router.post("/refresh-access-token", refreshAdminAccessToken);
 
 /** Refresh Admin Information (admin only) */
