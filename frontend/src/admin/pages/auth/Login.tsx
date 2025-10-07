@@ -1,9 +1,11 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../hooks/useNotification";
-import TextInput from "../../../components/TextInput"; 
+import TextInput from "../../../components/inputs/Text.input"; 
 import useAuthContext from "../../../hooks/useAuth";
 import useAppContext from "../../../hooks/useApp";
+import LoginButton from "../../../components/buttons/Login.button";
+import PasswordInput from "../../../components/inputs/Password.input";
 
 function Login() {
   const { login } = useAuthContext();
@@ -75,9 +77,8 @@ function Login() {
           error={usernameError}
         />
 
-        <TextInput
+        <PasswordInput
           label="Password"
-          type="password"
           name="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -87,13 +88,7 @@ function Login() {
 
         <TextInput type="text" name="role" value={role} hidden/>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-4 bg-blue-600 text-white py-2 rounded hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
-          {loading ? "Logging in..." : "Login"}
-        </button>
+        <LoginButton loading={loading} label="Login"/>
       </form>
     </section>
   );

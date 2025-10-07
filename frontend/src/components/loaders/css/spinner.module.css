@@ -1,0 +1,48 @@
+:root {
+  --bounce-distance: -10px;
+  --color-first: #0d94c5; /* blue */
+  --color-second: #343f44; 
+  --color-third: #83dbf8; 
+  --animation-speed-letters: 0.8s;
+  --animation-speed-logo: 1s;
+  --stagger-delay: 0.05s;
+}
+
+/* Letters animation */
+@keyframes bounceColor {
+  0%, 100% {
+    transform: translateY(0);
+    color: var(--color-first);
+  }
+  25% {
+    color: var(--color-second);
+  }
+  50% {
+    transform: translateY(var(--bounce-distance));
+    color: var(--color-third);
+  }
+}
+
+.sphSpinnerLetter {
+  display: inline-block;
+  animation: bounceColor var(--animation-speed-letters) ease-in-out infinite;
+  animation-delay: calc(var(--index) * var(--stagger-delay));
+  user-select: none;
+}
+
+/* Logo bounce (synced with letters) */
+@keyframes bounceImage {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(var(--bounce-distance)) scale(1.1);
+    opacity: 0.8;
+  }
+}
+
+.logoBounce {
+  animation: bounceImage var(--animation-speed-logo) ease-in-out infinite;
+  user-select: none;
+}
