@@ -5,7 +5,6 @@ import adminMailRoutes from "../admin/routes/mail.routes.js";
 import clientAuthRoutes from "./auth.routes.js";
 import clientMailRoutes from "./mail.routes.js";
 import genericRoutes from "./generic.routes.js";
-import logsRoutes from "./log.routes.js";
 const router = express.Router();
 
 /** Admin Routes */
