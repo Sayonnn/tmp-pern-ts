@@ -6,6 +6,7 @@ import useAuthContext from "../../../hooks/useAuth";
 import useAppContext from "../../../hooks/useApp";
 import LoginButton from "../../../components/buttons/Login.button";
 import PasswordInput from "../../../components/inputs/Password.input";
+import GoogleButton from "../../../components/buttons/Google.button";
 
 function Login() {
   const { login } = useAuthContext();
@@ -89,6 +90,14 @@ function Login() {
         <TextInput type="text" name="role" value={role} hidden/>
 
         <LoginButton loading={loading} label="Login"/>
+
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-gray-300"/>
+          <span className="mx-2 text-gray-500 text-sm">or continue with</span>
+          <hr className="flex-grow border-gray-300"/>
+        </div>
+
+        <GoogleButton onClick={() => { } } label="Login with Google"/>
       </form>
     </section>
   );

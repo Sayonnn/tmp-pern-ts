@@ -25,3 +25,9 @@ export interface LoginButtonProps {
   loading?: boolean;
   label?: string;
 }
+
+export interface GoogleButtonProps {
+  onClick?: () => void;
+  label?: string;
+  className?: string;
+}

@@ -5,6 +5,7 @@ import TextInput from "../../components/inputs/Text.input";
 import PasswordInput from "../../components/inputs/Password.input";
 import useAuthContext from "../../hooks/useAuth";
 import LoginButton from "../../components/buttons/Login.button";
+import GoogleButton from "../../components/buttons/Google.button";
 
 function Login() {  
   const { login } = useAuthContext();
@@ -88,6 +89,15 @@ function Login() {
         <TextInput type="text" name="role" value={role} onChange={() => { } } hidden/>
 
         <LoginButton loading={loading} label="Login"/>
+
+        <div className="flex items-center my-4">
+          <hr className="flex-grow border-gray-300"/>
+          <span className="mx-2 text-gray-500 text-sm">or continue with</span>
+          <hr className="flex-grow border-gray-300"/>
+        </div>
+
+
+        <GoogleButton onClick={() => { } } label="Login with Google"/>
       </form>
     </section>
   );
