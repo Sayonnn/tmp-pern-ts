@@ -10,7 +10,7 @@ export interface RecaptchaRef {
 
 const Recaptcha = forwardRef<RecaptchaRef, RecaptchaProps>(({ onChange }, ref) => {
   const recaptchaRef = useRef<ReCAPTCHA>(null);
-  const {configs} = useAppContext();
+  const { configs } = useAppContext();
 
   useImperativeHandle(ref, () => ({
     reset: () => recaptchaRef.current?.reset(),
@@ -18,11 +18,15 @@ const Recaptcha = forwardRef<RecaptchaRef, RecaptchaProps>(({ onChange }, ref) =
   }));
 
   return (
-    <ReCAPTCHA
-      ref={recaptchaRef}
-      sitekey={configs.recaptchaSiteKey}
-      onChange={onChange}
-    />
+    <div className="flex justify-center w-full">
+      <div className="w-full max-w-md">
+        <ReCAPTCHA
+          ref={recaptchaRef}
+          sitekey={configs.recaptchaSiteKey}
+          onChange={onChange}
+        />
+      </div>
+    </div>
   );
 });
 
