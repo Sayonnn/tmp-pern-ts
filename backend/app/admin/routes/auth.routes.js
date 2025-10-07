@@ -2,7 +2,6 @@ import express from "express";
 import {
   startAdminRegistration,
   startAdminLogin,
-  refreshAdminAccessToken,
   refreshAdminInformation,
   forgotAdminPassword,
   resetAdminPassword,

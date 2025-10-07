@@ -6,7 +6,6 @@ import {
   resetClientPassword,
   twoFactorAuthenticationSetup,
   twoFactorAuthenticationVerify,
-  refreshClientAccessToken,
   refreshClientInformation,
   startClientLogout,
 } from "../controllers/auth.controller.js";
