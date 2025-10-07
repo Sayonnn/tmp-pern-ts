@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNotification } from "../../hooks/useNotification";
 import TextInput from "../../components/inputs/Text.input";
-import ClientService from "../../services/api.service";
 import SubmitButton from "../../components/buttons/Submit.button";
+import Recaptcha, { type RecaptchaRef } from "../../components/Recaptcha";
+import ClientService from "../../services/api.service";
+import { postDatas } from "../../services/axios.service";
 
 function ForgotPassword() {
   const { notify } = useNotification();
+
+  const recaptchaRef = useRef<RecaptchaRef>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,12 +27,37 @@ function ForgotPassword() {
       return;
     }
 
+    if (!recaptchaToken) {
+      notify && notify("Please complete the CAPTCHA", "error");
+      setLoading(false);
+      return;
+    }
+
     try {
+      // Verify reCAPTCHA with backend
+      const recaptchaRes = await postDatas({
+        url: "/recaptcha",
+        data: { token: recaptchaToken },
+      });
+
+      if (!recaptchaRes.success) {
+        notify && notify("CAPTCHA verification failed", "error");
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
+        setLoading(false);
+        return;
+      }
+
+      // Proceed with forgot password
       await ClientService.auth.forgotPassword({ email });
       setLoading(false);
       notify && notify("Password reset email sent, please check your email", "success");
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
     } catch (err: any) {
       setLoading(false);
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       notify && notify(err.message || "Failed to send reset email", "error");
     }
   };
@@ -50,10 +80,10 @@ function ForgotPassword() {
           error={emailError}
         />
 
-        {/* Optional 2FA or CAPTCHA placeholder */}
-        {/* <div className="bg-gray-200 h-16 flex items-center justify-center rounded text-sm text-gray-500">
-          CAPTCHA / 2FA placeholder
-        </div> */}
+        <Recaptcha
+          ref={recaptchaRef}
+          onChange={(token) => setRecaptchaToken(token)}
+        />
 
         <SubmitButton loading={loading} label="Send Reset Link" />
       </form>
