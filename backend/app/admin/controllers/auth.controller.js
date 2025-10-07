@@ -1,6 +1,6 @@
 import { errorResponse, successResponse } from "../../utils/response.js";
 import { registerAdmin, loginAdmin, forgotPassword, resetPassword, setupAdmin2FA, verifyAdmin2FA, logoutAdmin } from "../services/auth.service.js";
-import { generateAccessToken, verifyToken } from "../../utils/jwt.js";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "../../utils/jwt.js";
 import { saveCookie } from "../../utils/cookies.js";
 
 /* ===========================================
@@ -73,34 +73,38 @@ export const startAdminLogin = async (req, res) => {
   }
 };
 
+
 /* ===========================================
- * Refresh an admin's access token ( not used )
+ * Refresh Access Token (Admin)
  * =========================================== */
 export const refreshAdminAccessToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-
+    const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
-      return errorResponse(res, 401, "Refresh token missing. Please log in again.");
+      return errorResponse(res, 401, "No refresh token found. Please log in again.");
     }
 
     const decoded = verifyToken(refreshToken);
-    const accessToken = generateAccessToken(decoded);
+    if (!decoded || decoded.role !== "admin") {
+      return errorResponse(res, 403, "Invalid or expired refresh token.");
+    }
 
-    return successResponse(res, "Refresh successful", {
-      user: {
-        id: decoded.id,
-        email: decoded.email,
-        username: decoded.username,
-        role: decoded.role,
-        permissions: decoded.permissions,
-        created_at: decoded.created_at
-      },
-      accessToken,
+    // Generate new tokens
+    const newAccessToken = generateAccessToken(decoded);
+    const newRefreshToken = generateRefreshToken(decoded); // ROTATE!
+
+    // Update cookies
+    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000); // 1h
+    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000); // 7d
+
+    return successResponse(res, "Access token refreshed", {
+      user: decoded
     });
   } catch (err) {
-    console.error("Refresh Token Error:", err);
-    return errorResponse(res, 403, "Refresh failed. Please log in again.");
+    console.error("Admin Refresh Error:", err);
+    removeCookie(res, "refreshToken");
+    removeCookie(res, "accessToken");
+    return errorResponse(res, 403, "Session expired. Please log in again.");
   }
 };
 

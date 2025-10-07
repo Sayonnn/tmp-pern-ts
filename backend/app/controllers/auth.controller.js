@@ -1,6 +1,6 @@
 import { registerClient, loginClient, forgotPassword, resetPassword, setupClient2FA, verifyClient2FA, logoutClient } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
-import { generateAccessToken, verifyToken } from "../utils/jwt.js";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/jwt.js";
 import { saveCookie } from "../utils/cookies.js";
 
 /* ===========================================
@@ -48,35 +48,35 @@ export const startClientLogin = async (req, res) => {
 };
 
 /* ===========================================
- * Refresh client's access token using refresh token ( not used )
+ * Refresh Access Token (Client)
  * =========================================== */
 export const refreshClientAccessToken = async (req, res) => {
   try {
-    const refreshToken = req.cookies.refreshToken;
-
+    const refreshToken = req.cookies?.refreshToken;
     if (!refreshToken) {
-      return errorResponse(res, 401, "Refresh token missing. Please log in again.");
+      return errorResponse(res, 401, "No refresh token found. Please log in again.");
     }
 
-    // Verify refresh token
     const decoded = verifyToken(refreshToken);
+    if (!decoded || decoded.role !== "client") {
+      return errorResponse(res, 403, "Invalid or expired refresh token.");
+    }
 
-    // ⚠️ At this point you can either:
-    //   a) trust decoded payload (fast, stateless, typical JWT flow)
-    //   b) check DB if refresh token is still valid (revocation logic)
+    const newAccessToken = generateAccessToken(decoded);
+    const newRefreshToken = generateRefreshToken(decoded);
 
-    // Generate new access token
-    const accessToken = generateAccessToken(decoded);
+    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000);
+    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000);
 
-    return successResponse(res, "Refresh successful", {
-      user: { id: decoded.id, email: decoded.email,username: decoded.username, role: decoded.role,created_at: decoded.created_at },
-      accessToken,
+    return successResponse(res, "Access token refreshed", {
+      user: decoded
     });
   } catch (err) {
-    console.error("Refresh Token Error:", err);
-
-    return errorResponse(res, 403, "Refresh failed. Please log in again.");
-  } 
+    console.error("Client Refresh Error:", err);
+    removeCookie(res, "refreshToken");
+    removeCookie(res, "accessToken");
+    return errorResponse(res, 403, "Session expired. Please log in again.");
+  }
 };
 
 /* ===========================================
