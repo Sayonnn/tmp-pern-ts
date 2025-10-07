@@ -48,38 +48,6 @@ export const startClientLogin = async (req, res) => {
 };
 
 /* ===========================================
- * Refresh Access Token (Client)
- * =========================================== */
-export const refreshClientAccessToken = async (req, res) => {
-  try {
-    const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) {
-      return errorResponse(res, 401, "No refresh token found. Please log in again.");
-    }
-
-    const decoded = verifyToken(refreshToken);
-    if (!decoded || decoded.role !== "client") {
-      return errorResponse(res, 403, "Invalid or expired refresh token.");
-    }
-
-    const newAccessToken = generateAccessToken(decoded);
-    const newRefreshToken = generateRefreshToken(decoded);
-
-    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000);
-    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000);
-
-    return successResponse(res, "Access token refreshed", {
-      user: decoded
-    });
-  } catch (err) {
-    console.error("Client Refresh Error:", err);
-    removeCookie(res, "refreshToken");
-    removeCookie(res, "accessToken");
-    return errorResponse(res, 403, "Session expired. Please log in again.");
-  }
-};
-
-/* ===========================================
  * Refresh Client Information in exchange of access token
  * =========================================== */
 export const refreshClientInformation = async (req, res) => {
@@ -90,7 +58,6 @@ export const refreshClientInformation = async (req, res) => {
       return errorResponse(res, 401, "Access token missing. Please log in again.");
     }
     
-    /** Verify access token */
     const decoded = verifyToken(accessToken);
     
     return successResponse(res, "Refresh successful", {

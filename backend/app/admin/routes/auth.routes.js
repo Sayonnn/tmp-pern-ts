@@ -22,9 +22,6 @@ router.post("/login", startAdminLogin);
 /** LOGOUT (admin only) */
 router.post("/logout", startAdminLogout);
 
-/** Refresh Token (admin only) */ 
-router.post("/refresh-access-token", refreshAdminAccessToken);
-
 /** Refresh Admin Information (admin only) */
 router.post("/refresh-admin-information", refreshAdminInformation);
 

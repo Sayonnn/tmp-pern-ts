@@ -22,9 +22,6 @@ router.post("/login", startClientLogin);
 /** LOGOUT (client) */
 router.post("/logout", startClientLogout);
 
-/** Refresh Token (client) */
-router.post("/refresh-access-token", refreshClientAccessToken);
-
 /** Refresh Client Information (client) */
 router.post("/refresh-client-information", refreshClientInformation);
 

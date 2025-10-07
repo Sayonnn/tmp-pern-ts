@@ -73,41 +73,6 @@ export const startAdminLogin = async (req, res) => {
   }
 };
 
-
-/* ===========================================
- * Refresh Access Token (Admin)
- * =========================================== */
-export const refreshAdminAccessToken = async (req, res) => {
-  try {
-    const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) {
-      return errorResponse(res, 401, "No refresh token found. Please log in again.");
-    }
-
-    const decoded = verifyToken(refreshToken);
-    if (!decoded || decoded.role !== "admin") {
-      return errorResponse(res, 403, "Invalid or expired refresh token.");
-    }
-
-    // Generate new tokens
-    const newAccessToken = generateAccessToken(decoded);
-    const newRefreshToken = generateRefreshToken(decoded); // ROTATE!
-
-    // Update cookies
-    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000); // 1h
-    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000); // 7d
-
-    return successResponse(res, "Access token refreshed", {
-      user: decoded
-    });
-  } catch (err) {
-    console.error("Admin Refresh Error:", err);
-    removeCookie(res, "refreshToken");
-    removeCookie(res, "accessToken");
-    return errorResponse(res, 403, "Session expired. Please log in again.");
-  }
-};
-
 /* ===========================================
  * Refresh Admin Information in exchange of access token
  * =========================================== */

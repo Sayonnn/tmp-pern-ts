@@ -18,4 +18,32 @@ router.use("/mailer", ClientMailRoutes);
 /** Monitoring Routes */
 router.use("/logs", logsRoutes);
 
+/** Refresh Token */
+router.use("/refresh-token", (req, res) => {
+    try {
+    const refreshToken = req.cookies?.refreshToken;
+    if (!refreshToken) {
+        return errorResponse(res, 401, "No refresh token found. Please log in again.");
+    }
+
+    const decoded = verifyToken(refreshToken);
+
+    const newAccessToken = generateAccessToken(decoded);
+    const newRefreshToken = generateRefreshToken(decoded);
+
+    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000);
+    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000);
+
+    return successResponse(res, "Access token refreshed", {
+        user: decoded,
+        accessToken: newAccessToken,
+        refreshToken: newRefreshToken
+    });
+    } catch (err) {
+    removeCookie(res, "refreshToken");
+    removeCookie(res, "accessToken");
+    return errorResponse(res, 403, "Session expired. Please log in again.");
+    }
+});
+
 export default router;
