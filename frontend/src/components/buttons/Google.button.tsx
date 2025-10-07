@@ -5,7 +5,7 @@ const GoogleButton: React.FC<GoogleButtonProps> = ({
     onClick,
     label = "Login with Google",
     className = "",
-  }) => {
+  }) => { 
     return (
       <button
         type="button"

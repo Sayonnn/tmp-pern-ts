@@ -17,8 +17,8 @@ class ClientService {
   public auth = {
     login: (data: { username: string; password: string }) => postDatas({ url: `${ClientService.apiUrl}/auth/login`, data }),
     logout: () => postDatas({ url: `${ClientService.apiUrl}/auth/logout` }),
-    signup:() => null,
-    forgotPassword:() => null,
+    signup:(data: {username: string, email: string, password: string }) => postDatas({ url: `${ClientService.apiUrl}/auth/register`,data }),
+    forgotPassword:() => postDatas({ url: `${ClientService.apiUrl}/auth/forgot-password` }),
     refreshToken: () => postDatas({ url: `${ClientService.apiUrl}/auth/refresh-access-token` }),
     refreshInformation: () => postDatas({ url: `${ClientService.apiUrl}/auth/refresh-client-information` }),
   };

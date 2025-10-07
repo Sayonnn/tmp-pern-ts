@@ -31,3 +31,10 @@ export interface GoogleButtonProps {
   label?: string;
   className?: string;
 }
+
+
+export interface PrimaryLinkProps {
+  to: string;
+  children: React.ReactNode;
+  className?: string;
+}

@@ -4,7 +4,7 @@ import { type PasswordInputProps } from "../../interfaces/formsInterface";
 function PasswordInput({
   label,
   name,
-  value,
+  value, 
   onChange,
   placeholder,
   error,

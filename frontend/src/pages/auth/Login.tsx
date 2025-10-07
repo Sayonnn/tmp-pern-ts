@@ -1,4 +1,4 @@
-import { useState, type SetStateAction } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../hooks/useNotification";
 import TextInput from "../../components/inputs/Text.input";
@@ -6,6 +6,7 @@ import PasswordInput from "../../components/inputs/Password.input";
 import useAuthContext from "../../hooks/useAuth";
 import LoginButton from "../../components/buttons/Login.button";
 import GoogleButton from "../../components/buttons/Google.button";
+import PrimaryLink from "../../components/links/Primary.link";
 
 function Login() {  
   const { login } = useAuthContext();
@@ -62,43 +63,47 @@ function Login() {
   
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-100">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md flex flex-col gap-4"
-      >
-        <h1 className="text-3xl font-bold text-center mb-4">Client Login</h1>
+ <form
+  onSubmit={handleSubmit}
+  className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md flex flex-col gap-4"
+>
+  <h1 className="text-3xl font-bold text-center mb-4">Client Login</h1>
 
-        <TextInput
-          label="Username"
-          name="username"
-          value={username}
-          onChange={(e: { target: { value: SetStateAction<string>; }; }) => setUsername(e.target.value)}
-          placeholder="Enter username"
-          error={usernameError}
-        />
+  <TextInput
+    label="Username"
+    name="username"
+    value={username}
+    onChange={(e) => setUsername(e.target.value)}
+    placeholder="Enter username"
+    error={usernameError}
+  />
 
-        <PasswordInput
-          label="Password"
-          name="password"
-          value={password}
-          onChange={(e: { target: { value: SetStateAction<string>; }; }) => setPassword(e.target.value)}
-          placeholder="Enter password"
-          error={passwordError}
-        />
+  <PasswordInput
+    label="Password"
+    name="password"
+    value={password}
+    onChange={(e) => setPassword(e.target.value)}
+    placeholder="Enter password"
+    error={passwordError}
+  />
 
-        <TextInput type="text" name="role" value={role} onChange={() => { } } hidden/>
+  <TextInput type="text" name="role" value={role} onChange={() => {}} hidden/>
 
-        <LoginButton loading={loading} label="Login"/>
+  <LoginButton loading={loading} label="Login"/>
 
-        <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300"/>
-          <span className="mx-2 text-gray-500 text-sm">or continue with</span>
-          <hr className="flex-grow border-gray-300"/>
-        </div>
+  <div className="flex items-center my-4">
+    <hr className="flex-grow border-gray-300"/>
+    <span className="mx-2 text-gray-500 text-sm">or continue with</span>
+    <hr className="flex-grow border-gray-300"/>
+  </div>
 
+  <GoogleButton onClick={() => {}} label="Login with Google"/>
 
-        <GoogleButton onClick={() => { } } label="Login with Google"/>
-      </form>
+  <div className="text-center text-sm text-gray-500 mt-4">
+    Don't have an account? <PrimaryLink to="/signup">Sign up</PrimaryLink>
+  </div>
+</form>
+
     </section>
   );
 }

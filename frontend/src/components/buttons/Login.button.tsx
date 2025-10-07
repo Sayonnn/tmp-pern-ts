@@ -3,7 +3,7 @@ import type { LoginButtonProps } from "../../interfaces/formsInterface";
 
 const LoginButton: React.FC<LoginButtonProps> = ({ loading = false, label = "Login" }) => {
   return (
-    <button 
+    <button  
       type="submit"
       disabled={loading}
       className="py-4 bg-sky-500 text-white rounded-lg shadow-md 

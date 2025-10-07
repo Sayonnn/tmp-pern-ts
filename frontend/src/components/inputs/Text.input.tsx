@@ -23,7 +23,7 @@ const TextInput = ({
         target: { ...e.target, value: cleanValue },
       });
     };
-  
+   
 
   return (
     <div className="flex flex-col gap-1">
