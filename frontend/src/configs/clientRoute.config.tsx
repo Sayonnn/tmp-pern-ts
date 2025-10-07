@@ -12,6 +12,8 @@ import Dashboard from "../pages/Dashboard";
 import NotFound from "../pages/defaults/NotFound";
 
 import type { RouteConfigArray } from "../interfaces/authInterface";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import ResetPassword from "../pages/auth/ResetPassword";
 
 /* ==========================================
  * Route Configuration
@@ -48,18 +50,18 @@ export const routes: RouteConfigArray[] = [
     role: "client",
     isProtected: false,
   },
-  // {
-  //   path: "/forgot-password",
-  //   element: <ForgotPassword />,
-  //   role: "client",
-  //   isProtected: false,
-  // },
-  // {
-  //   path: "/reset-password/:token",
-  //   element: <ResetPassword />,
-  //   role: "client",
-  //   isProtected: false,
-  // },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+    role: "client",
+    isProtected: false,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword />,
+    role: "client",
+    isProtected: false,
+  },
 
   /* ============================
    * Two-Factor Authentication (2FA)

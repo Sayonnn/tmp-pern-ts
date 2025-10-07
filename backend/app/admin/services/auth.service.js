@@ -116,7 +116,7 @@ export const forgotPassword = async (email) => {
     name: user.username,
     link: resetLink,
     subject: "Password Reset Request",
-    template: "resetPassword",
+    template: "auth/forgot-password",
   });
 
   return { message: "Password reset link sent to email" };

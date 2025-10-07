@@ -7,6 +7,7 @@ import useAuthContext from "../../hooks/useAuth";
 import LoginButton from "../../components/buttons/Login.button";
 import GoogleButton from "../../components/buttons/Google.button";
 import PrimaryLink from "../../components/links/Primary.link";
+import ForgotPasswordLink from "../../components/links/forgotPassword.link";
 
 function Login() {  
   const { login } = useAuthContext();
@@ -90,6 +91,10 @@ function Login() {
   <TextInput type="text" name="role" value={role} onChange={() => {}} hidden/>
 
   <LoginButton loading={loading} label="Login"/>
+
+  <div className="flex justify-end mb-2">
+    <ForgotPasswordLink />
+  </div>
 
   <div className="flex items-center my-4">
     <hr className="flex-grow border-gray-300"/>

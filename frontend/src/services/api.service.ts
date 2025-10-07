@@ -18,7 +18,8 @@ class ClientService {
     login: (data: { username: string; password: string }) => postDatas({ url: `${ClientService.apiUrl}/auth/login`, data }),
     logout: () => postDatas({ url: `${ClientService.apiUrl}/auth/logout` }),
     signup:(data: {username: string, email: string, password: string }) => postDatas({ url: `${ClientService.apiUrl}/auth/register`,data }),
-    forgotPassword:() => postDatas({ url: `${ClientService.apiUrl}/auth/forgot-password` }),
+    forgotPassword:(data: {email: string}) => postDatas({ url: `${ClientService.apiUrl}/auth/forgot-password`,data }),
+    resetPassword:(data: {token: string | null, password: string}) => postDatas({ url: `${ClientService.apiUrl}/auth/reset-password`,data }),
     refreshToken: () => postDatas({ url: `${ClientService.apiUrl}/auth/refresh-access-token` }),
     refreshInformation: () => postDatas({ url: `${ClientService.apiUrl}/auth/refresh-client-information` }),
   };

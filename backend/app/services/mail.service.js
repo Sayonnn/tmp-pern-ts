@@ -7,7 +7,7 @@
  * Version: 1.0.0
  */ 
 import { config } from "../configs/index.js";
-import transporter from "../configs/mailer.js";
+import transporter from "../configs/mailer.js"; 
 
 export default async function sendEmail({
   to = [],

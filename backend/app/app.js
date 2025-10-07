@@ -10,6 +10,7 @@ import { pool } from "./configs/database.js";
 import { corsConfig } from "./configs/cors.js";
 import indexRoutes from "./routes/index.routes.js";
 import { limiter } from "./configs/rateLimiter.js";
+import mailRoutes from "./routes/mail.routes.js";
 
 const app = express();
 
@@ -24,6 +25,7 @@ app.use(limiter);
 
 /** Index Routes */
 app.use("/api", indexRoutes);
+app.use("/mail", mailRoutes);
 
 /** Index Route */
 app.get("/", (_, res) => {

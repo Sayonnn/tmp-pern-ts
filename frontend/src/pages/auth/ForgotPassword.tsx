@@ -1,11 +1,10 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../hooks/useNotification";
 import TextInput from "../../components/inputs/Text.input";
-import LoginButton from "../../components/buttons/Login.button";
+import ClientService from "../../services/api.service";
+import SubmitButton from "../../components/buttons/Submit.button";
 
 function ForgotPassword() {
-  const navigate = useNavigate();
   const { notify } = useNotification();
 
   const [email, setEmail] = useState("");
@@ -24,10 +23,9 @@ function ForgotPassword() {
     }
 
     try {
-      // TODO: Implement forgot password API
+      await ClientService.auth.forgotPassword({ email });
       setLoading(false);
-      notify && notify("Password reset email sent", "success");
-      setTimeout(() => navigate("/login"), 1000);
+      notify && notify("Password reset email sent, please check your email", "success");
     } catch (err: any) {
       setLoading(false);
       notify && notify(err.message || "Failed to send reset email", "error");
@@ -53,11 +51,11 @@ function ForgotPassword() {
         />
 
         {/* Optional 2FA or CAPTCHA placeholder */}
-        <div className="bg-gray-200 h-16 flex items-center justify-center rounded text-sm text-gray-500">
+        {/* <div className="bg-gray-200 h-16 flex items-center justify-center rounded text-sm text-gray-500">
           CAPTCHA / 2FA placeholder
-        </div>
+        </div> */}
 
-        <LoginButton loading={loading} label="Send Reset Link" />
+        <SubmitButton loading={loading} label="Send Reset Link" />
       </form>
     </section>
   );

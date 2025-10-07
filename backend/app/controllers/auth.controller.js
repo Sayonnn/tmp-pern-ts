@@ -92,11 +92,11 @@ export const forgotClientPassword = async (req, res) => {
  * =========================================== */
 export const resetClientPassword = async (req, res) => {
   try {
-    const { token, newPassword } = req.body;
-    if (!token || !newPassword)
+    const { token, password } = req.body;
+    if (!token || !password)
       return errorResponse(res, 400, "Token and new password required");
 
-    const result = await resetPassword(token, newPassword);
+    const result = await resetPassword(token, password);
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Reset Password Error:", err);

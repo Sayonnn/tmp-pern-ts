@@ -32,9 +32,14 @@ export interface GoogleButtonProps {
   className?: string;
 }
 
-
 export interface PrimaryLinkProps {
   to: string;
   children: React.ReactNode;
+  className?: string;
+}
+
+export interface ForgotPasswordLinkProps {
+  to?: string; 
+  children?: React.ReactNode;
   className?: string;
 }

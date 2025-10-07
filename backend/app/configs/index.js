@@ -29,6 +29,7 @@ export const config = {
         }
     },
     app:{
+        appUrl: process.env.APP_URL,
         appName: process.env.APP_NAME,
         coolName: process.env.APP_COOL_NAME,
         abbr: process.env.DB_ABBR,
