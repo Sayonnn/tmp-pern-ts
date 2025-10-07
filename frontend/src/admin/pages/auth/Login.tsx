@@ -51,7 +51,7 @@ function AdminLogin() {
     }
 
     try {
-      // Verify reCAPTCHA with backend
+      /** Verify reCAPTCHA with backend */ 
       const recaptchaRes = await postDatas({
         url: "/recaptcha",
         data: { token: recaptchaToken },
