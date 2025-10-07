@@ -10,4 +10,4 @@ const router = express.Router();
  */
 router.post("/send", startSendingClientEmail);
  
-export default router;
+export default router; 

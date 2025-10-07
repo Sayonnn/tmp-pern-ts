@@ -62,7 +62,7 @@ export const refreshClientInformation = async (req, res) => {
     
     return successResponse(res, "Refresh successful", {
       user: decoded
-    });
+    }); 
     
   } catch (err) {
     console.error("Refresh Token Error:", err);

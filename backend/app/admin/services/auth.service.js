@@ -1,6 +1,6 @@
 import { startQuery } from "../../utils/query.js";
 import { comparePassword, hashPassword } from "../../utils/hash.js";
-import { generateAccessToken, generateRefreshToken } from "../../utils/jwt.js";
+import { generateAccessToken, generateRefreshToken, verifyToken } from "../../utils/jwt.js";
 import { config } from "../../configs/index.js";
 import { generateTOTPSecret } from "../../utils/totp.js";
 
@@ -9,7 +9,7 @@ import { generateTOTPSecret } from "../../utils/totp.js";
  * =========================================== */
 export const registerAdmin = async (
   email, 
-  password,
+  password, 
   permissions = {},
   super_admin = true,
   username,
@@ -109,7 +109,7 @@ export const forgotPassword = async (email) => {
 
   const user = result.rows[0];
   const resetToken = generateAccessToken(user);
-  const resetLink = `${config.app.frontendUrl}/reset-password?token=${resetToken}`;
+  const resetLink = `${config.app.appUrl}/${config.app.appName}-admin/reset-password?token=${resetToken}`;
 
   await sendEmail({
     to: user.email,
@@ -119,15 +119,14 @@ export const forgotPassword = async (email) => {
     template: "auth/forgot-password",
   });
 
-  return { message: "Password reset link sent to email" };
+  return { message: "Password reset link sent to your email, please check your registered email." };
 };
 
 /* ===========================================
  * Reset Password (admin)
  * =========================================== */
 export const resetPassword = async (token, newPassword) => {
-  const decoded = jwt.verify(token, config.jwt.secret);
-
+  const decoded = verifyToken(token);
   const sql = `SELECT id FROM ${config.db.abbr}_admins WHERE email = $1`;
   const result = await startQuery(sql, [decoded.email]);
 
@@ -136,9 +135,6 @@ export const resetPassword = async (token, newPassword) => {
   }
 
   const hashedPassword = hashPassword(newPassword);
-  
-  /** Add email or account password verification in the future */
-
   const updateSql = `UPDATE ${config.db.abbr}_admins SET password = $1 WHERE id = $2`;
   await startQuery(updateSql, [hashedPassword, result.rows[0].id]);
 

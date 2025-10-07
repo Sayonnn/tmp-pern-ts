@@ -4,7 +4,7 @@
  * Author: 
  * Date: 2025-09-06
  * Path: app/services/mail.service.js 
- * Version: 1.0.0
+ * Version: 1.0.0 
  */ 
 import { config } from "../configs/index.js";
 import transporter from "../configs/mailer.js"; 

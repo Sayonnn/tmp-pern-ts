@@ -12,4 +12,4 @@ export async function startSendingClientEmail(req, res) {
     return res.status(500).json({ error: "Error sending email" });
   }
 }
- 
+  

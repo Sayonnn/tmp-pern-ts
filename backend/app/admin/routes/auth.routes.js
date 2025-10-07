@@ -6,7 +6,7 @@ import {
   forgotAdminPassword,
   resetAdminPassword,
   twoFactorAuthenticationSetup,
-  twoFactorAuthenticationVerify,
+  twoFactorAuthenticationVerify, 
   startAdminLogout,
 } from "../controllers/auth.controller.js";
 

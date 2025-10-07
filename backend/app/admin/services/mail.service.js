@@ -3,7 +3,7 @@
  * Description: This service is responsible for sending emails for admins
  * Author: 
  * Date: 2025-09-06
- * Path: app/admin/services/mail.service.js 
+ * Path: app/admin/services/mail.service.js  
  * Version: 1.0.0
  */ 
 

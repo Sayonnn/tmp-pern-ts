@@ -9,6 +9,7 @@ import LoginButton from "../../../components/buttons/Login.button";
 import GoogleButton from "../../../components/buttons/Google.button";
 import Recaptcha, { type RecaptchaRef } from "../../../components/Recaptcha";
 import { postDatas } from "../../../services/axios.service";
+import ForgotPasswordLink from "../../../components/links/forgotPassword.link";
 
 function AdminLogin() {
   const { login } = useAuthContext();
@@ -119,6 +120,10 @@ function AdminLogin() {
         />
 
         <TextInput type="text" name="role" value={role} hidden />
+
+        <div className="flex justify-end">
+          <ForgotPasswordLink />
+        </div>
 
         <LoginButton loading={loading} label="Login" />
 

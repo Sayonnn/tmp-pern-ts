@@ -12,22 +12,18 @@ import { verifyToken } from "../utils/jwt.js";
  * Register (client)
  * =========================================== */
 export const registerClient = async (email, password, username) => {
-  // Check Email
   const checkEmailSql = `SELECT id FROM ${config.db.abbr}_clients WHERE email = $1`;
   const existingEmail = await startQuery(checkEmailSql, [email]);
   if (existingEmail.rows.length > 0)
     throw { field: "email", message: "This email is already registered." };
 
-  // Check Username
   const checkUsernameSql = `SELECT id FROM ${config.db.abbr}_clients WHERE username = $1`;
   const existingUsername = await startQuery(checkUsernameSql, [username]);
   if (existingUsername.rows.length > 0)
     throw { field: "username", message: "This username is already registered." };
 
-  // Hash Password
   const hashedPassword = await hashPassword(password);
 
-  // Save Client
   const sql = `
     INSERT INTO ${config.db.abbr}_clients (email, password, username, role)
     VALUES ($1, $2, $3, 'client')
@@ -96,7 +92,7 @@ export const forgotPassword = async (email) => {
   const resetLink = `${config.app.appUrl}/reset-password?token=${resetToken}`;
 
   await sendEmail({
-    to: user.email,
+    to: user.email, 
     name: user.username,
     link: resetLink,
     subject: "Password Reset Request",

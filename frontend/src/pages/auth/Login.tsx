@@ -120,12 +120,13 @@ function Login() {
 
         <TextInput type="text" name="role" value={role} onChange={() => {}} hidden/>
 
-        <LoginButton loading={loading} label="Login"/>
-
-        <div className="flex justify-end mb-2">
+        <div className="flex justify-end">
           <ForgotPasswordLink />
         </div>
+        
+        <LoginButton loading={loading} label="Login"/>
 
+  
         <Recaptcha
           ref={recaptchaRef}
           onChange={(token) => setRecaptchaToken(token)}

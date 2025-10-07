@@ -86,7 +86,7 @@ export const refreshAdminInformation = async (req, res) => {
     const decoded = verifyToken(accessToken);
 
     return successResponse(res, "Refresh successful", {
-      user: decoded
+      user: decoded 
     });
     
   } catch (err) {

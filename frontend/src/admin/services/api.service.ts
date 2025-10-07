@@ -8,7 +8,7 @@ class AdminService {
   private constructor() {} 
 
   public static getInstance(): AdminService {
-    if (!AdminService.instance) {
+    if (!AdminService.instance) { 
       AdminService.instance = new AdminService();
     }
     return AdminService.instance;
@@ -19,8 +19,9 @@ class AdminService {
     login: (data: { username: string; password: string }) => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/login`, data }),
     logout: () => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/logout` }),
     signup:() => null,
-    forgotPassword:() => null,
-    refreshToken: () => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-access-token` }),
+    forgotPassword:(data: {email: string}) => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/forgot-password`,data }),
+    resetPassword:(data: {token: string | null, password: string}) => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/reset-password`,data }),
+    refreshToken: () => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-token` }),
     refreshInformation: () => postDatas({ url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-admin-information` }),
   };
 }
