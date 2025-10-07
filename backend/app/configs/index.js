@@ -34,5 +34,10 @@ export const config = {
         coolName: process.env.APP_COOL_NAME,
         abbr: process.env.DB_ABBR,
         emailHeader: process.env.EMAIL_HEADER
+    },
+    recaptcha:{
+        url: process.env.RECAPTCHA_URI,
+        secretKey: process.env.RECAPTCHA_SECRET_KEY,
+        siteKey: process.env.RECAPTCHA_SITE_KEY
     }
 }

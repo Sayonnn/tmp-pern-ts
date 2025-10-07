@@ -40,3 +40,7 @@ export interface RouteConfigArray {
   isAuthenticated?: boolean;
   isProtected?: boolean;
 }
+
+export interface RecaptchaProps {
+  onChange?: (token: string | null) => void;
+}

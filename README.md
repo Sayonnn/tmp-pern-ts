@@ -38,6 +38,7 @@ client: appname | appname19!
 7. Update `docker-compose.yml` if needed.
 8. Update `.github/workflows/main.yml` if needed.
 9. Update frontend `nginx.conf` if using custom config.
+8. Update .env captcha site keys ( frontend ) and secret key ( backend )
 10. Change default app password and mailing account in backend/.env 
 10. Adjust ports if necessary.
 

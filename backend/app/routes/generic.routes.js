@@ -2,6 +2,7 @@ import express from "express";
 import { errorResponse, successResponse } from "../utils/response.js";
 import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/jwt.js";
 import { saveCookie, removeCookie } from "../utils/cookies.js";
+import { config } from "../configs/index.js";
 const router = express.Router();
 
 /*====================================
@@ -55,5 +56,40 @@ router.post("/logs", (req, res) => {
     res.status(500).json({ error: error.message || "Internal Server Error" });
   }
 });
+
+/*====================================
+/* recaptcha (Generic)
+/*====================================*/
+router.post("/recaptcha", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({ error: "Recaptcha token is required" });
+    }
+
+    const secretKey = config.recaptcha.secretKey;
+    if (!secretKey) {
+      return res.status(500).json({ error: "Recaptcha secret key not set" });
+    }
+
+    const response = await fetch(
+      `${config.recaptcha.url}?secret=${secretKey}&response=${token}`,
+      { method: "POST" }
+    );
+
+    const data = await response.json();
+
+    if (!data.success) {
+      return res.status(400).json({ error: "Recaptcha verification failed" });
+    }
+
+    res.status(200).json({ success: true, message: "Recaptcha verified successfully" });
+  } catch (error) {
+    console.error("API /recaptcha Error:", error.message || error);
+    res.status(500).json({ error: error.message || "Internal Server Error" });
+  }
+});
+
 
 export default router;
