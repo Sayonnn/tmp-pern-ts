@@ -1,18 +1,23 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useNotification } from "../../../hooks/useNotification";
-import TextInput from "../../../components/inputs/Text.input"; 
+import TextInput from "../../../components/inputs/Text.input";
+import PasswordInput from "../../../components/inputs/Password.input";
 import useAuthContext from "../../../hooks/useAuth";
 import useAppContext from "../../../hooks/useApp";
 import LoginButton from "../../../components/buttons/Login.button";
-import PasswordInput from "../../../components/inputs/Password.input";
 import GoogleButton from "../../../components/buttons/Google.button";
+import Recaptcha, { type RecaptchaRef } from "../../../components/Recaptcha";
+import { postDatas } from "../../../services/axios.service";
 
-function Login() {
+function AdminLogin() {
   const { login } = useAuthContext();
   const { configs } = useAppContext();
   const navigate = useNavigate();
   const { notify } = useNotification();
+
+  const recaptchaRef = useRef<RecaptchaRef>(null);
+  const [recaptchaToken, setRecaptchaToken] = useState<string | null>(null);
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -39,24 +44,50 @@ function Login() {
       setLoading(false);
       return;
     }
+    if (!recaptchaToken) {
+      notify && notify("Please complete the CAPTCHA", "error");
+      setLoading(false);
+      return;
+    }
 
     try {
-      const { status,message,field } = await login({ username, password, role });
-      console.log({status,message,field});
+      // Verify reCAPTCHA with backend
+      const recaptchaRes = await postDatas({
+        url: "/recaptcha",
+        data: { token: recaptchaToken },
+      });
 
+      if (!recaptchaRes.success) {
+        notify && notify("CAPTCHA verification failed", "error");
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
+        setLoading(false);
+        return;
+      }
+
+      // Login
+      const { status, message, field } = await login({ username, password, role });
       setLoading(false);
 
       if (!status) {
         if (field === "username") setUsernameError(message);
         else if (field === "password") setPasswordError(message);
         else notify && notify(message, "error");
+
+        recaptchaRef.current?.reset();
+        setRecaptchaToken(null);
         return;
       }
 
       notify && notify(message, "success");
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
+
       setTimeout(() => navigate(`/${configs.appName}-admin/dashboard`), 1000);
     } catch (error: any) {
       setLoading(false);
+      recaptchaRef.current?.reset();
+      setRecaptchaToken(null);
       notify && notify(error.message || "Login failed", "error");
     }
   };
@@ -87,20 +118,25 @@ function Login() {
           error={passwordError}
         />
 
-        <TextInput type="text" name="role" value={role} hidden/>
+        <TextInput type="text" name="role" value={role} hidden />
 
-        <LoginButton loading={loading} label="Login"/>
+        <LoginButton loading={loading} label="Login" />
+
+        <Recaptcha
+          ref={recaptchaRef}
+          onChange={(token) => setRecaptchaToken(token)}
+        />
 
         <div className="flex items-center my-4">
-          <hr className="flex-grow border-gray-300"/>
+          <hr className="flex-grow border-gray-300" />
           <span className="mx-2 text-gray-500 text-sm">or continue with</span>
-          <hr className="flex-grow border-gray-300"/>
+          <hr className="flex-grow border-gray-300" />
         </div>
 
-        <GoogleButton onClick={() => { } } label="Login with Google"/>
+        <GoogleButton onClick={() => {}} label="Login with Google" />
       </form>
     </section>
   );
 }
 
-export default Login;
+export default AdminLogin;
