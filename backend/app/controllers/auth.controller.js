@@ -1,4 +1,4 @@
-import { registerClient, loginClient, forgotPassword, resetPassword, setupClient2FA, verifyClient2FA } from "../services/auth.service.js";
+import { registerClient, loginClient, forgotPassword, resetPassword, setupClient2FA, verifyClient2FA, logoutClient } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
 import { generateAccessToken, verifyToken } from "../utils/jwt.js";
 import { saveCookie } from "../utils/cookies.js";
@@ -12,7 +12,11 @@ export const startClientRegistration = async (req, res) => {
         if (!email || !password || !username) return errorResponse(res, 400, "Email, password and username are required");
     
         const { user, accessToken, refreshToken } = await registerClient(email, password, username);
-        saveCookie(res, "refreshToken", refreshToken);
+        // 7 days
+        saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
+        // 1 hour
+        saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
+        
         return successResponse(res, "Register successful", { user, accessToken });
     } catch (err) {
         console.error("Register Error:", err);
@@ -31,7 +35,11 @@ export const startClientLogin = async (req, res) => {
       return errorResponse(res, 400, "Username and password are required");
 
     const { user, accessToken, refreshToken } = await loginClient(username, password);
-    saveCookie(res, "refreshToken", refreshToken);
+    // 7 days
+    saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
+    // 1 hour
+    saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
+
     return successResponse(res, "Login successful", { user, accessToken });
   } catch (err) {
     console.error("Login Error:", err);
@@ -155,5 +163,30 @@ export const twoFactorAuthenticationVerify = async (req, res) => {
   } catch (err) {
     console.error("2FA Verify Error:", err);
     return errorResponse(res, 400, err.message);
+  }
+};
+
+/* ===========================================
+ * Logout a client
+ * =========================================== */
+export const startClientLogout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+    if (refreshToken) {
+      try {
+        await logoutClient(refreshToken);
+      } catch (err) {
+        console.warn("Failed to revoke client refresh token:", err);
+      }
+    }
+
+    removeCookie(res, "accessToken");
+    removeCookie(res, "refreshToken");
+
+    return successResponse(res, "Logout successful");
+  } catch (err) {
+    console.error("Logout Error:", err);
+    try { removeCookie(res, "accessToken"); removeCookie(res, "refreshToken"); } catch {}
+    return errorResponse(res, 500, "Logout failed. Please try again.");
   }
 };

@@ -149,3 +149,30 @@ export const verifyClient2FA = async (token, secret) => {
     throw { field: "token", message: "Token and secret are required" };
   return verifyTOTP(token, secret);
 };
+
+/* ===========================================
+ * Logout (client)
+ * =========================================== */
+export const logoutClient = async (refreshToken) => {
+  try {
+    if (!refreshToken) {
+      throw new Error("Missing refresh token");
+    }
+
+    // OPTIONAL: If you persist refresh tokens, delete it from DB:
+    // const sql = `DELETE FROM ${config.db.abbr}_refresh_tokens WHERE token = $1 AND owner_type = 'client'`;
+    // await startQuery(sql, [refreshToken]);
+
+    try {
+      const decoded = jwt.verify(refreshToken, config.jwt.secret);
+      console.log(`Client ${decoded.username} logged out`);
+    } catch (err) {
+      console.warn("Invalid or expired refresh token during logout");
+    }
+
+    return { message: "Logout successful" };
+  } catch (err) {
+    console.error("LogoutClient Error:", err);
+    throw new Error("Logout failed");
+  }
+};

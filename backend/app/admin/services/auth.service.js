@@ -8,7 +8,7 @@ import { generateTOTPSecret } from "../../utils/totp.js";
  * Register (admin)
  * =========================================== */
 export const registerAdmin = async (
-  email,
+  email, 
   password,
   permissions = {},
   super_admin = true,
@@ -176,4 +176,32 @@ export const verifyAdmin2FA = async (token, secret) => {
 
   const verified = verifyTOTP(token, secret);
   return verified;
+};
+
+/* ===========================================
+ * Logout (admin)
+ * =========================================== */
+export const logoutAdmin = async (refreshToken) => {
+  try {
+    if (!refreshToken) {
+      throw new Error("Missing refresh token");
+    }
+
+    // OPTIONAL: If you store refresh tokens in DB, revoke it here:
+    // const sql = `DELETE FROM ${config.db.abbr}_refresh_tokens WHERE token = $1 AND owner_type = 'admin'`;
+    // await startQuery(sql, [refreshToken]);
+
+    // If you're not storing tokens, this is a no-op, but we can still verify it's valid
+    try {
+      const decoded = jwt.verify(refreshToken, config.jwt.secret);
+      console.log(`Admin ${decoded.username} logged out`);
+    } catch (err) {
+      console.warn("Invalid or expired refresh token during logout");
+    }
+
+    return { message: "Logout successful" };
+  } catch (err) {
+    console.error("LogoutAdmin Error:", err);
+    throw new Error("Logout failed");
+  }
 };

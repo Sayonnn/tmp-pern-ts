@@ -1,5 +1,5 @@
 import { errorResponse, successResponse } from "../../utils/response.js";
-import { registerAdmin, loginAdmin, forgotPassword, resetPassword, setupAdmin2FA, verifyAdmin2FA } from "../services/auth.service.js";
+import { registerAdmin, loginAdmin, forgotPassword, resetPassword, setupAdmin2FA, verifyAdmin2FA, logoutAdmin } from "../services/auth.service.js";
 import { generateAccessToken, verifyToken } from "../../utils/jwt.js";
 import { saveCookie } from "../../utils/cookies.js";
 
@@ -26,7 +26,10 @@ export const startAdminRegistration = async (req, res) => {
       finalRole
     );
 
-    saveCookie(res, "refreshToken", refreshToken);
+    // 7 days
+    saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
+    // 1 hour
+    saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
 
     return successResponse(res, "Register successful", { user, accessToken });
   } catch (err) {
@@ -53,7 +56,10 @@ export const startAdminLogin = async (req, res) => {
 
     const { user, accessToken, refreshToken } = await loginAdmin(username, password);
 
-    saveCookie(res, "refreshToken", refreshToken);
+    // 7 days
+    saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
+    // 1 hour
+    saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
 
     return successResponse(res, "Login successful", { user, accessToken });
   } catch (err) {
@@ -185,5 +191,31 @@ export const twoFactorAuthenticationVerify = async (req, res) => {
   } catch (err) {
     console.error("2FA Verify Error:", err);
     return errorResponse(res, 400, err.message);
+  }
+};
+
+
+/* ===========================================
+ * Logout an admin
+ * =========================================== */
+export const startAdminLogout = async (req, res) => {
+  try {
+    const refreshToken = req.cookies?.refreshToken;
+    if (refreshToken) {
+      try {
+        await logoutAdmin(refreshToken);
+      } catch (err) {
+        console.warn("Failed to revoke admin refresh token:", err);
+      }
+    }
+
+    removeCookie(res, "accessToken");
+    removeCookie(res, "refreshToken");
+
+    return successResponse(res, "Logout successful");
+  } catch (err) {
+    console.error("Logout Error:", err);
+    try { removeCookie(res, "accessToken"); removeCookie(res, "refreshToken"); } catch {}
+    return errorResponse(res, 500, "Logout failed. Please try again.");
   }
 };
