@@ -1,5 +1,5 @@
 import express from "express";
-import { logs, recaptcha, refreshToken, twoFASetup, twoFAVerify, twoFADisable, TwoFAValidate, getAccessToken } from "../controllers/generic.controller.js";
+import { logs, recaptcha, refreshToken, twoFASetup, twoFAVerify, twoFADisable, TwoFAValidate, getAccessToken, get2FAProof,set2FAProof } from "../controllers/generic.controller.js";
 const router = express.Router();
  
 /*====================================
@@ -13,7 +13,16 @@ router.post("/refresh-token", refreshToken );
 router.get("/get-access-token", getAccessToken );
 
 /*====================================
-/* Logs (Generic)
+/* get 2fa proof
+/*====================================*/
+router.get("/get-2fa-proof",get2FAProof);
+
+/*====================================
+/* set 2fa proof
+/*====================================*/
+router.post("/set-2fa-proof",set2FAProof);
+
+/* Logs (Generic) */
 /*====================================*/
 router.post("/logs",logs );
 

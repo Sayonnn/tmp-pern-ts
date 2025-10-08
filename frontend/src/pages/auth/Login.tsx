@@ -65,7 +65,7 @@ function Login() {
         setRecaptchaToken(null);
         setLoading(false);
         return;
-      }
+      } 
 
       /** Proceed with login */
       const { status, message, field, require2FA } = await login({ username, password, role });

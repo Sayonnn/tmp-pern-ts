@@ -57,6 +57,45 @@ export async function getAccessToken(req,res){
 	}
 }
 
+/* ====================================
+ * GET 2FA Proof ( used to protect pages if 2fa is not yet completed )
+ *======================================*/
+export async function get2FAProof(req, res) {
+    try {
+        const is2FACompletedCookie = req.cookies?.is2FACompleted;
+        
+        // Convert string to actual boolean
+        const is2FACompleted = is2FACompletedCookie === 'true' || is2FACompletedCookie === true;
+        
+        if (!is2FACompleted) {
+            return errorResponse(res, 403, "2FA not completed. Please complete 2FA first.");
+        }
+        
+        console.log("is2FACompleted: ", is2FACompleted);
+        
+        // Return actual boolean, not the cookie string
+        return successResponse(res, "2FA completed successfully", { is2FACompleted: true });
+    } catch {
+        return errorResponse(res, 403, "2FA not completed. Please complete 2FA first.");
+    }
+}
+/* ====================================
+ * SET 2FA Proof ( called on frontend 2fa verification )
+ *======================================*/
+export async function set2FAProof(req, res) {
+	try {
+	  // Set the cookie to indicate 2FA completion
+	  saveCookie(res, "is2FACompleted", true);
+  
+	  console.log("✅ 2FA completed, cookie set to true.");
+  
+	  return successResponse(res, "2FA completed successfully", { is2FACompleted: true });
+	} catch (err) {
+	  console.error("❌ set2FAProof error:", err);
+	  return errorResponse(res, 403, "Failed to set 2FA proof.");
+	}
+  }
+  
 /*====================================
 /* Logs (Generic)
 /*====================================*/
