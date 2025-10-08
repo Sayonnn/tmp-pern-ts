@@ -48,7 +48,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       } finally {
         setInitialized(true);
       }
-    };
+    }; 
 
     initializeAuth();
   }, []);
@@ -70,7 +70,11 @@ const login = async ({ username, password, role }: loginProcessArgsProps) => {
       res = await ClientService.auth.login({ username, password });
     }
 
-    setStorage("authToken", res.accessToken);
+    /** make this happen after verification only */
+    if(!res.user.twofa_enabled){
+      setStorage("authToken", res.accessToken);
+    }
+
     setAccessToken(res.accessToken);
     setIsAuthenticated(true);
     setUser(res.user);

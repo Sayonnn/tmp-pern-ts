@@ -30,7 +30,7 @@ export interface twoFAProcessResponseProps {
 
 export interface AuthContextProps extends twoFAProcessResponseProps {
   isAuthenticated: boolean;
-  accessToken: string | null;
+  accessToken?: string | null;
   user: User | null;
   login: (args: loginProcessArgsProps) => Promise<loginProcessResponseProps>;
   logout: () => void;
