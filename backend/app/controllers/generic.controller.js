@@ -44,6 +44,20 @@ export async function refreshToken(req, res) {
 }
 
 /*====================================
+/* Get Access Token (Generic) 
+/*====================================*/
+export async function getAccessToken(req,res){
+	try {
+		 const accessToken = req.cookies?.accessToken;
+		 if(!accessToken) return errorResponse(res, 403, "Access token expired. Please log in again.");
+		 
+		return successResponse(res, "Access token refreshed", { accessToken });
+	} catch (error) {
+		return errorResponse(res, 403, "Failed to get access token");
+	}
+}
+
+/*====================================
 /* Logs (Generic)
 /*====================================*/
 export async function logs(req, res) {

@@ -78,10 +78,11 @@ export const startAdminLogin = async (req, res) => {
  * =========================================== */
 export const refreshAdminInformation = async (req, res) => {
   try {
-    const accessToken = req.headers['authorization']?.split(' ')[1];
-    if (!accessToken) {
-      return errorResponse(res, 401, "Access token missing. Please log in again.");
-    }
+    // const accessToken = req.headers['authorization']?.split(' ')[1];
+    const accessToken = req.cookies.accessToken;
+    
+    if (!accessToken) return errorResponse(res, 401, "Access token missing. Please log in again.");
+    
 
     const decoded = verifyToken(accessToken);
 

@@ -52,11 +52,11 @@ export const startClientLogin = async (req, res) => {
  * =========================================== */
 export const refreshClientInformation = async (req, res) => {
   try {
-    const accessToken = req.headers['authorization'].split(' ')[1];
-
-    if (!accessToken) {
-      return errorResponse(res, 401, "Access token missing. Please log in again.");
-    }
+    // const accessToken = req.headers['authorization'].split(' ')[1];
+    /** we rotate the tokens in the backend only */
+    const accessToken = req.cookies.accessToken;
+    
+    if (!accessToken) return errorResponse(res, 401, "Access token missing. Please log in again.");
     
     const decoded = verifyToken(accessToken);
     
@@ -66,7 +66,6 @@ export const refreshClientInformation = async (req, res) => {
     
   } catch (err) {
     console.error("Refresh Token Error:", err);
-
     return errorResponse(res, 403, "Refresh failed. Please log in again.");
   }
 };

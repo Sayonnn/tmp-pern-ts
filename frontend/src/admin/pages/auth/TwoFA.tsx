@@ -6,10 +6,9 @@ import SubmitButton from "../../../components/buttons/Submit.button";
 import TextInput from "../../../components/inputs/Text.input";
 import NotFound from "../../../pages/defaults/NotFound";
 import AdminService from "../../services/api.service";
-import { setStorage } from "../../../utils/storage.handler";
 
 const TwoFA: React.FC = () => {
-	const { user, require2FA, setRequire2FA, setIs2FADone,accessToken } = useAuthContext();
+	const { user, require2FA, setRequire2FA, setIs2FADone } = useAuthContext();
 	const navigate = useNavigate();
 	const { notify } = useNotification();
 	const [searchParams] = useSearchParams();
@@ -122,9 +121,6 @@ const TwoFA: React.FC = () => {
 				setMessage("Token verified successfully! Redirecting...");
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
-				if (accessToken) {
-					setStorage("authToken", accessToken);
-				}
 				setIs2FADone(true);
 				setTimeout(() => navigate("/dashboard"), 1000);
 			} else {

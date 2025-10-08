@@ -1,5 +1,5 @@
-import { postDatas } from "../services/axios.service";
-
+import { fetchData, postDatas } from "../services/axios.service";
+ 
 class ClientService {
 	private static instance: ClientService;
 	private static apiUrl: string = import.meta.env.VITE_API_URL;
@@ -31,6 +31,9 @@ class ClientService {
 
 		refreshToken: () =>
 			postDatas({ url: `${ClientService.apiUrl}/auth/refresh-token` }),
+
+		getAccessToken: () =>
+			fetchData({ url: `${ClientService.apiUrl}/get-access-token` }),
 
 		refreshInformation: () =>
 			postDatas({url: `${ClientService.apiUrl}/auth/refresh-client-information`}),

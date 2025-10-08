@@ -1,11 +1,16 @@
 import express from "express";
-import { logs, recaptcha, refreshToken, twoFASetup, twoFAVerify, twoFADisable, TwoFAValidate } from "../controllers/generic.controller.js";
+import { logs, recaptcha, refreshToken, twoFASetup, twoFAVerify, twoFADisable, TwoFAValidate, getAccessToken } from "../controllers/generic.controller.js";
 const router = express.Router();
  
 /*====================================
 /* Refresh Token (Generic)
 /*====================================*/
 router.post("/refresh-token", refreshToken );
+
+/*====================================
+/* Get Access Token (Generic)
+/*====================================*/
+router.get("/get-access-token", getAccessToken );
 
 /*====================================
 /* Logs (Generic)
