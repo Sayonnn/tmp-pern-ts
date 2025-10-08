@@ -112,7 +112,7 @@ export async function twoFASetup(req, res) {
 		const secret = generateTOTPSecret(username);
 		const otpauthUrl = `otpauth://totp/${encodeURIComponent(
 			username
-		)}?secret=${secret}&issuer=MyApp`;
+		)}?secret=${secret}&issuer=${config.app.appName}`;
 		const qrCodeDataURL = await generateQRCode(otpauthUrl);
 
 		return successResponse(res, "2FA secret generated successfully", {
