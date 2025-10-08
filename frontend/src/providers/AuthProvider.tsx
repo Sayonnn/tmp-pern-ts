@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import type { AuthContextProps, DecodedToken, loginProcessArgsProps } from "../interfaces/authInterface";
-// import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";
 import ClientService from "../services/api.service"; 
