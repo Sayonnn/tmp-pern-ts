@@ -121,6 +121,9 @@ const TwoFA: React.FC = () => {
 				setMessage("Token verified successfully! Redirecting...");
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
+				/** call the set2faproof here */
+				await AdminService.auth.set2FAProof();
+				/** only set authenticated here */
 				setTimeout(() => navigate("/dashboard"), 1000);
 			} else {
 				setMessage(data.message || "Invalid token.");

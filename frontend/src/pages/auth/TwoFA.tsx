@@ -117,8 +117,7 @@ const TwoFA: React.FC = () => {
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
 				/** call the set2faproof here */
-				const {is2FACompleted} = await ClientService.auth.set2FAProof();
-				console.log("set2FAProofData: ", is2FACompleted);
+				 await ClientService.auth.set2FAProof();
 				/** only set authenticated here */
 				setTimeout(() => navigate("/dashboard"), 1000);
 			} else {
