@@ -47,6 +47,7 @@ export interface RouteConfigArray {
   role?: "admin" | "client";
   isAuthenticated?: boolean;
   isProtected?: boolean;
+  redirectIfAuthenticated?: boolean;
 }
 
 export interface RecaptchaProps {
