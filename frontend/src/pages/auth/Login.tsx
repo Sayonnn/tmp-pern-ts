@@ -84,8 +84,6 @@ function Login() {
       /** Success notification */
       notify && notify(message, "success");
       
-      console.log("require2FA: ", require2FA); 
-      
       setTimeout(() => {
         setLoading(false);
         recaptchaRef.current?.reset();
@@ -95,7 +93,7 @@ function Login() {
           /** Generate secure token for 2FA page */
           const token = generateSecureToken(16);
           if (token) {
-            navigate(`/2fa?token=${token}}`);
+            navigate(`/2fa?token=${token}`);
           } else {
             notify && notify("Failed to generate security token", "error");
           }
@@ -129,7 +127,7 @@ function Login() {
             error={usernameError}
             disabled={loading}
           />
-
+ 
           <PasswordInput
             label="Password"
             name="password"

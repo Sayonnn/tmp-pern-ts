@@ -35,18 +35,11 @@ const TwoFA: React.FC = () => {
 		const check2FA = async () => {
 			try {
 				if(!user) return;
-				
-				const data = await AdminService.auth.twoFAValidate({
-					username: user.username,
-					role: user.role,
-				})
-
+				const data = await AdminService.auth.twoFAValidate({username: user.username, role: user.role})
 				if(data){
 					setSecret(data.twofa_secret);
 					setIsSetupMode(!data.twofa_enabled);
 				}
-
-				console.log("data validate: ", data);
 			} catch (error) {
 				console.error("error validate: ", error);
 			}

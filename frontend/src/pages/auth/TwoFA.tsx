@@ -35,18 +35,11 @@ const TwoFA: React.FC = () => {
 		const check2FA = async () => {
 			try {
 				if(!user) return;
-				
-				const data = await ClientService.auth.twoFAValidate({
-					username: user.username,
-					role: "client",
-				})
-
+				const data = await ClientService.auth.twoFAValidate({username: user.username, role: "client"})
 				if(data){
 					setSecret(data.twofa_secret);
 					setIsSetupMode(!data.twofa_enabled);
 				}
-
-				console.log("data validate: ", data);
 			} catch (error) {
 				console.error("error validate: ", error);
 			}
@@ -123,6 +116,7 @@ const TwoFA: React.FC = () => {
 				setMessage("Token verified successfully! Redirecting...");
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
+				/** mark 2fa process as done */
 				setIs2FADone(true);
 				setTimeout(() => navigate("/dashboard"), 1000);
 			} else {

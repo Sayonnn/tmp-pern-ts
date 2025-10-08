@@ -7,7 +7,7 @@ import ClientService from "../services/api.service";
 import AdminService from "../admin/services/api.service";
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
-
+ 
 const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -31,10 +31,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             setAccessToken(token);
             setIsAuthenticated(true);
           
-            console.log(decoded)
             setUser(decoded);
 
-        
             await refreshData(decoded.role);
           }else {
             removeStorage("authToken");
@@ -54,12 +52,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     initializeAuth();
   }, []);
+
+  useEffect(() => {
+    console.log("is2FADone: ", is2FADone);
+  },[is2FADone])
   
 /** Login */
 const login = async ({ username, password, role }: loginProcessArgsProps) => {
-  if (!username || !password) {
-    return { status: false, message: "Username or password missing" };
-  }
+  if (!username || !password) return { status: false, message: "Username or password missing" };
 
   try {
     let res;
@@ -75,7 +75,6 @@ const login = async ({ username, password, role }: loginProcessArgsProps) => {
     setIsAuthenticated(true);
     setUser(res.user);
     setRequire2FA(res.user.twofa_enabled);
-    console.log(res.user.twofa_enabled)
 
     return { status: true, message: res.message, require2FA: res.user.twofa_enabled };
   } catch (error: any) {
@@ -127,7 +126,6 @@ const refreshData = async (role: string) => {
       setUser(null);
       setRequire2FA(false); 
       
-      // Reload after state cleanup
       window.location.reload();
     }
   };

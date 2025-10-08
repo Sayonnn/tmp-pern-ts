@@ -1,28 +1,26 @@
 // ProtectedRoute.tsx
 import { Navigate } from "react-router-dom";
 import useAuthContext from "../hooks/useAuth";
-import type { ProtectedRouteProps } from "../interfaces/authInterface";
 import useAppContext from "../hooks/useApp";
+import type { ProtectedRouteProps } from "../interfaces/authInterface";
 
 const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
   const { isAuthenticated, user } = useAuthContext();
   const { configs } = useAppContext();
 
-  // Not logged in → redirect
+  /** Not logged in → redirect to login */
   if (!isAuthenticated) {
-    return <Navigate to={role === "admin" ? `/${configs.appName}-admin` : "/login"} />;
+    const loginPath = role === "admin" ? `/${configs.appName}-admin` : "/login";
+    return <Navigate to={loginPath} replace />;
   }
- 
-  // Logged in but role does not match → redirect
+
+  /** Role mismatch → redirect to correct dashboard */
   if (role && user?.role !== role) {
-    return <Navigate to={user?.role === "admin" ? `/${configs.appName}-admin` : "/"} />;
+    const correctPath = user?.role === "admin" ? `/${configs.appName}-admin` : "/";
+    return <Navigate to={correctPath} replace />;
   }
 
-  // if(user?.twofa_enabled && !is2FADone) {
-  //   return <Navigate to={user?.role === "admin" ? `/${configs.appName}-admin` : "/login"} />;
-  // }
-
-  // Authorized
+  /** Authorized → render children */
   return <>{children}</>;
 };
 

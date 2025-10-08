@@ -1,4 +1,5 @@
 export interface User {
+    twofa_secret: any;
     id?: string;
     email: string;
     role: string;
