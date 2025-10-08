@@ -1,95 +1,35 @@
 import express from "express";
-import { errorResponse, successResponse } from "../utils/response.js";
-import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/jwt.js";
-import { saveCookie, removeCookie } from "../utils/cookies.js";
-import { config } from "../configs/index.js";
+import { logs, recaptcha, refreshToken, twoFASetup, twoFAVerify, twoFADisable } from "../controllers/generic.controller.js";
 const router = express.Router();
 
 /*====================================
 /* Refresh Token (Generic)
 /*====================================*/
-router.post("/refresh-token", (req, res) => {
-  try {
-    const refreshToken = req.cookies?.refreshToken;
-    if (!refreshToken) {
-      return errorResponse(res, 401, "No refresh token found. Please log in again.");
-    }
-
-    const decoded = verifyToken(refreshToken);
-    const newAccessToken = generateAccessToken(decoded);
-    const newRefreshToken = generateRefreshToken(decoded);
-
-    saveCookie(res, "accessToken", newAccessToken, 1 * 60 * 60 * 1000);
-    saveCookie(res, "refreshToken", newRefreshToken, 7 * 24 * 60 * 60 * 1000);
-
-    return successResponse(res, "Access token refreshed", {
-      user: decoded,
-      accessToken: newAccessToken,
-      refreshToken: newRefreshToken,
-    });
-  } catch (err) {
-    removeCookie(res, "refreshToken");
-    removeCookie(res, "accessToken");
-    return errorResponse(res, 403, "Session expired. Please log in again.");
-  }
-});
-
+router.post("/refresh-token", refreshToken );
 
 /*====================================
 /* Logs (Generic)
 /*====================================*/
-router.post("/logs", (req, res) => {
-  try {
-    const { message, stack, context } = req.body;
-
-    if (!message) {
-      return res.status(400).json({ error: "Log message is required" });
-    }
-
-    const logMessage = context ? `[${context}] ${message}` : message;
-    console.error("Frontend Log:", logMessage);
-    if (stack) console.error(stack);
-
-    res.status(200).json({ success: true, message: "Log received" });
-  } catch (error) {
-    console.error("API /logs Error:", error.message || error);
-    res.status(500).json({ error: error.message || "Internal Server Error" });
-  }
-});
+router.post("/logs",logs );
 
 /*====================================
 /* recaptcha (Generic)
 /*====================================*/
-router.post("/recaptcha", async (req, res) => {
-  try {
-    const { token } = req.body;
+router.post("/recaptcha", recaptcha);
 
-    if (!token) {
-      return res.status(400).json({ error: "Recaptcha token is required" });
-    }
+/*====================================
+/* 2FA SETUP
+/*====================================*/
+router.post("/2fa/setup", twoFASetup);
 
-    const secretKey = config.recaptcha.secretKey;
-    if (!secretKey) {
-      return res.status(500).json({ error: "Recaptcha secret key not set" });
-    }
+/*====================================
+/* 2FA VERIFY 
+/*====================================*/
+router.post("/2fa/verify", twoFAVerify);
 
-    const response = await fetch(
-      `${config.recaptcha.url}?secret=${secretKey}&response=${token}`,
-      { method: "POST" }
-    );
-
-    const data = await response.json();
-
-    if (!data.success) {
-      return res.status(400).json({ error: "Recaptcha verification failed" });
-    }
-
-    res.status(200).json({ success: true, message: "Recaptcha verified successfully" });
-  } catch (error) {
-    console.error("API /recaptcha Error:", error.message || error);
-    res.status(500).json({ error: error.message || "Internal Server Error" });
-  }
-});
-
+/*====================================
+/* 2FA DISABLE
+/*====================================*/
+router.post("/2fa/disable", twoFADisable);
 
 export default router;
