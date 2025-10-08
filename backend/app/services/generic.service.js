@@ -1,7 +1,7 @@
 import { startQuery } from "../utils/query.js";
 import { config } from "../configs/index.js";
 
-/* ===========================================
+/* =========================================== 
  * Enable 2FA for client
  * =========================================== */
 export const enableTwoFA = async (username, secret,role) => {

@@ -4,8 +4,6 @@ import {
   startClientLogin,
   forgotClientPassword,
   resetClientPassword,
-  twoFactorAuthenticationSetup,
-  twoFactorAuthenticationVerify,
   refreshClientInformation,
   startClientLogout,
 } from "../controllers/auth.controller.js";
@@ -29,9 +27,5 @@ router.post("/forgot-password", forgotClientPassword);
 
 /** RESET PASSWORD (client) */
 router.post("/reset-password", resetClientPassword);
-
-/** 2FA (client) */
-router.post("/2fa/setup", twoFactorAuthenticationSetup);
-router.post("/2fa/verify", twoFactorAuthenticationVerify);
 
 export default router;

@@ -2,8 +2,6 @@ import { startQuery } from "../utils/query.js";
 import { comparePassword, hashPassword } from "../utils/hash.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/jwt.js";
 import { config } from "../configs/index.js";
-import { generateTOTPSecret, verifyTOTP } from "../utils/totp.js";
-import { generateQRCode } from "../utils/qrcode.js";
 import jwt from "jsonwebtoken";
 import sendEmail  from "./mail.service.js";
 import { verifyToken } from "../utils/jwt.js";
@@ -118,33 +116,6 @@ export const resetPassword = async (token, newPassword) => {
   await startQuery(updateSql, [hashedPassword, result.rows[0].id]);
 
   return { message: "Password reset successful. You can now log in." };
-};
-
-/* ===========================================
- * 2FA Setup (client)
- * =========================================== */
-export const setupClient2FA = async (username) => {
-  if (!username) throw { field: "username", message: "Username is required" };
-
-  const secret = generateTOTPSecret(`appname (${username})`);
-  const otpauthUrl = `otpauth://totp/appname (${username})?secret=${secret}&issuer=appname`;
-  const qr = await generateQRCode(otpauthUrl);
-
-  const sql = `UPDATE ${config.db.abbr}_clients SET twofa_secret = $1 WHERE username = $2 RETURNING id`;
-  const result = await startQuery(sql, [secret, username]);
-  if (result.rowCount === 0)
-    throw { field: "username", message: "User not found for 2FA setup" };
-
-  return { qr, secret };
-};
-
-/* ===========================================
- * 2FA Verify (client)
- * =========================================== */
-export const verifyClient2FA = async (token, secret) => {
-  if (!token || !secret)
-    throw { field: "token", message: "Token and secret are required" };
-  return verifyTOTP(token, secret);
 };
 
 /* ===========================================

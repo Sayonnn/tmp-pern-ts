@@ -135,7 +135,7 @@ export async function twoFAVerify(req, res) {
 			return errorResponse(
 				res,
 				400,
-				"Token, secret, and username are required"
+				"Token, secret, and username are required" 
 			);
 
 		const verified = verifyTOTP(token, secret);
@@ -154,13 +154,14 @@ export async function twoFAVerify(req, res) {
 /*====================================
 /* GET 2FA Datas
 /*====================================*/
-export async function TwoFADatas(req, res) {
+export async function TwoFAValidate(req, res) {
 	try {
 		const { username,role } = req.body;
 		if (!username) return errorResponse(res, 400, "Username required");
 
-		const updatedUser = await getTwoFASecret(username,role);
-		return successResponse(res, "2FA disabled successfully", updatedUser);
+		const user2FADatas = await getTwoFASecret(username,role);
+		console.log("user2FADatas: ", user2FADatas);
+		return successResponse(res, "2FA disabled successfully", user2FADatas);
 	} catch (error) {
 		console.error("API /2fa/disable Error:", error);
 		return errorResponse(res, 500, error.message || "Internal Server Error");

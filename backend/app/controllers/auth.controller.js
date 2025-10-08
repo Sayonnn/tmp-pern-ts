@@ -1,10 +1,10 @@
-import { registerClient, loginClient, forgotPassword, resetPassword, setupClient2FA, verifyClient2FA, logoutClient } from "../services/auth.service.js";
+import { registerClient, loginClient, forgotPassword, resetPassword,logoutClient } from "../services/auth.service.js";
 import { errorResponse, successResponse } from "../utils/response.js";
-import { generateAccessToken, generateRefreshToken, verifyToken } from "../utils/jwt.js";
+import {  verifyToken } from "../utils/jwt.js";
 import { saveCookie } from "../utils/cookies.js";
 
 /* ===========================================
- * Register a new client
+ * Register a new client 
  * =========================================== */
 export const startClientRegistration = async (req, res) => {
     try {
@@ -100,35 +100,6 @@ export const resetClientPassword = async (req, res) => {
     return successResponse(res, result.message);
   } catch (err) {
     console.error("Reset Password Error:", err);
-    return errorResponse(res, 400, err.message);
-  }
-};
-
-/* ===========================================
- * 2FA setup (client)
- * =========================================== */
-export const twoFactorAuthenticationSetup = async (req, res) => {
-  try {
-    const { username } = req.body;
-    const { qr, secret } = await setupClient2FA(username);
-    return successResponse(res, "2FA setup successful", { qr, secret });
-  } catch (err) {
-    console.error("2FA Setup Error:", err);
-    return errorResponse(res, 400, err.message);
-  }
-};
-
-/* ===========================================
- * 2FA verify (client)
- * =========================================== */
-export const twoFactorAuthenticationVerify = async (req, res) => {
-  try {
-    const { token, secret } = req.body;
-    const verified = await verifyClient2FA(token, secret);
-    if (!verified) return errorResponse(res, 400, "Invalid 2FA code");
-    return successResponse(res, "2FA verification successful");
-  } catch (err) {
-    console.error("2FA Verify Error:", err);
     return errorResponse(res, 400, err.message);
   }
 };
