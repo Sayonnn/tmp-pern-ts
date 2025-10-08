@@ -150,14 +150,16 @@ export const twoFactorAuthenticationSetup = async (req, res) => {
  * =========================================== */
 export const twoFactorAuthenticationVerify = async (req, res) => {
   try {
-    const { token, secret } = req.body;
-    if (!token || !secret)
-      return errorResponse(res, 400, "Token and secret required");
+    const { token, secret, username } = req.body;
+    if (!token || !secret || !username)
+      return errorResponse(res, 400, "Token, secret, and username are required");
 
-    const verified = await verifyAdmin2FA(token, secret);
-    if (!verified) return errorResponse(res, 400, "Invalid 2FA code");
+    const updatedAdmin = await verifyAdmin2FA(token, secret, username);
+    if (!updatedAdmin) return errorResponse(res, 400, "Invalid 2FA code");
 
-    return successResponse(res, "2FA verification successful");
+    return successResponse(res, "2FA verified and enabled successfully", {
+      admin: updatedAdmin,
+    });
   } catch (err) {
     console.error("2FA Verify Error:", err);
     return errorResponse(res, 400, err.message);

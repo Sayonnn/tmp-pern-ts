@@ -54,18 +54,20 @@ function AdminLogin() {
 		}
 
 		try {
-			/** Verify reCAPTCHA  */
-			const recaptchaRes = await postDatas({
-				url: "/recaptcha",
-				data: { token: recaptchaToken },
-			});
+			/** Verify reCAPTCHA (skip if session is valid) */
+			if (recaptchaToken !== "SESSION_VALID") {
+				const recaptchaRes = await postDatas({
+					url: "/recaptcha",
+					data: { token: recaptchaToken },
+				});
 
-			if (!recaptchaRes.success) {
-				notify && notify("CAPTCHA verification failed", "error");
-				recaptchaRef.current?.reset();
-				setRecaptchaToken(null);
-				setLoading(false);
-				return;
+				if (!recaptchaRes.success) {
+					notify && notify("CAPTCHA verification failed", "error");
+					recaptchaRef.current?.reset();
+					setRecaptchaToken(null);
+					setLoading(false);
+					return;
+				}
 			}
 
 			/** Proceed with login */
@@ -100,7 +102,7 @@ function AdminLogin() {
 					/** Generate secure token for 2FA page */
 					const token = generateSecureToken(16);
 					if (token) {
-						navigate(`/2fa?token=${token}}`);
+						navigate(`/${configs.appName}-admin/2fa?token=${token}`);
 					} else {
 						notify && notify("Failed to generate security token", "error");
 					}

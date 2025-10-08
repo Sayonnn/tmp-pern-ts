@@ -165,13 +165,38 @@ export const setupAdmin2FA = async (username) => {
 };
 
 /* ===========================================
+ * Enable 2FA for admin (after verification)
+ * =========================================== */
+export const enableAdmin2FA = async (username, secret) => {
+  const sql = `
+    UPDATE ${config.db.abbr}_admins
+    SET twofa_enabled = TRUE,
+        twofa_secret = $1,
+        updated_at = NOW()
+    WHERE username = $2
+    RETURNING id, username, twofa_enabled
+  `;
+
+  const result = await startQuery(sql, [secret, username]);
+  if (result.rowCount === 0)
+    throw { field: "username", message: `Admin ${username} not found` };
+
+  return result.rows[0];
+};
+
+/* ===========================================
  * 2FA verify (admin)
  * =========================================== */
-export const verifyAdmin2FA = async (token, secret) => {
+export const verifyAdmin2FA = async (token, secret, username) => {
   if (!token || !secret) throw { field: "token", message: "Token and secret are required" };
+  if (!username) throw { field: "username", message: "Username is required" };
 
   const verified = verifyTOTP(token, secret);
-  return verified;
+  if (!verified) return null;
+
+  // Enable 2FA in the database after successful verification
+  const updatedAdmin = await enableAdmin2FA(username, secret);
+  return updatedAdmin;
 };
 
 /* ===========================================

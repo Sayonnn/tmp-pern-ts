@@ -46,7 +46,7 @@ export const routes: RouteConfigArray[] = [
     path: "/2fa",
     element: <TwoFA />,
     role: "admin",
-    isProtected: true, // must be logged in
+    isProtected: false, // must be logged in
   },
 
   /* ============================

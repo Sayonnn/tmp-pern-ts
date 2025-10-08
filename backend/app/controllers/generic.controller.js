@@ -86,6 +86,26 @@ export async function recaptcha(req, res) {
 	try {
 		const { token } = req.body;
 
+		// Check if user has a valid reCAPTCHA session
+		const recaptchaSession = req.cookies?.recaptchaSession;
+		if (recaptchaSession) {
+			try {
+				// Verify the session token
+				const decoded = verifyToken(recaptchaSession);
+				if (decoded && decoded.recaptchaVerified) {
+					// Session is still valid, bypass verification
+					return res.status(200).json({
+						success: true,
+						message: "Recaptcha session valid",
+						sessionValid: true
+					});
+				}
+			} catch (err) {
+				// Session expired or invalid, continue with normal verification
+				console.log("reCAPTCHA session expired or invalid");
+			}
+		}
+
 		if (!token) {
 			return res.status(400).json({ error: "Recaptcha token is required" });
 		}
@@ -106,11 +126,63 @@ export async function recaptcha(req, res) {
 			return res.status(400).json({ error: "Recaptcha verification failed" });
 		}
 
-		res
-			.status(200)
-			.json({ success: true, message: "Recaptcha verified successfully" });
+		// Create a session token that lasts 30 minutes
+		const sessionToken = generateAccessToken({
+			recaptchaVerified: true,
+			timestamp: Date.now()
+		});
+
+		// Save session cookie (30 minutes)
+		saveCookie(res, "recaptchaSession", sessionToken, 30 * 60 * 1000);
+
+		res.status(200).json({
+			success: true,
+			message: "Recaptcha verified successfully",
+			sessionValid: false
+		});
 	} catch (error) {
 		console.error("API /recaptcha Error:", error.message || error);
+		res.status(500).json({ error: error.message || "Internal Server Error" });
+	}
+}
+
+/*====================================
+/* Check reCAPTCHA Session (Generic)
+/*====================================*/
+export async function checkRecaptchaSession(req, res) {
+	try {
+		const recaptchaSession = req.cookies?.recaptchaSession;
+
+		if (!recaptchaSession) {
+			return res.status(200).json({
+				valid: false,
+				message: "No reCAPTCHA session found"
+			});
+		}
+
+		try {
+			const decoded = verifyToken(recaptchaSession);
+			if (decoded && decoded.recaptchaVerified) {
+				return res.status(200).json({
+					valid: true,
+					message: "reCAPTCHA session is valid"
+				});
+			}
+		} catch (err) {
+			// Session expired
+			removeCookie(res, "recaptchaSession");
+			return res.status(200).json({
+				valid: false,
+				message: "reCAPTCHA session expired"
+			});
+		}
+
+		return res.status(200).json({
+			valid: false,
+			message: "Invalid reCAPTCHA session"
+		});
+	} catch (error) {
+		console.error("API /recaptcha/check-session Error:", error.message || error);
 		res.status(500).json({ error: error.message || "Internal Server Error" });
 	}
 }

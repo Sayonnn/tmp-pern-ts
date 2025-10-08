@@ -34,18 +34,20 @@ function ForgotPassword() {
     }
 
     try {
-      // Verify reCAPTCHA with backend
-      const recaptchaRes = await postDatas({
-        url: "/recaptcha",
-        data: { token: recaptchaToken },
-      });
+      // Verify reCAPTCHA with backend (skip if session is valid)
+      if (recaptchaToken !== "SESSION_VALID") {
+        const recaptchaRes = await postDatas({
+          url: "/recaptcha",
+          data: { token: recaptchaToken },
+        });
 
-      if (!recaptchaRes.success) {
-        notify && notify("CAPTCHA verification failed", "error");
-        recaptchaRef.current?.reset();
-        setRecaptchaToken(null);
-        setLoading(false);
-        return;
+        if (!recaptchaRes.success) {
+          notify && notify("CAPTCHA verification failed", "error");
+          recaptchaRef.current?.reset();
+          setRecaptchaToken(null);
+          setLoading(false);
+          return;
+        }
       }
 
       // Proceed with forgot password

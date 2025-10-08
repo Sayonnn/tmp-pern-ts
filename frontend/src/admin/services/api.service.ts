@@ -55,16 +55,16 @@ class AdminService {
 				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-admin-information`,
 			}),
 
-		/** 2FA endpoints (QR Code) */
+		/** 2FA endpoints (QR Code) - using generic routes */
 		twoFASetup: (data: { username: string, role: string }) =>
 			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/2fa/setup`,
+				url: `${AdminService.apiUrl}/2fa/setup`,
 				data,
 			}),
 
 		twoFAVerify: (data: { token: string; secret: string; username: string, role: string }) =>
 			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/2fa/verify`,
+				url: `${AdminService.apiUrl}/2fa/verify`,
 				data,
 			}),
 

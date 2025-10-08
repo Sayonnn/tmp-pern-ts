@@ -6,9 +6,11 @@ import SubmitButton from "../../../components/buttons/Submit.button";
 import TextInput from "../../../components/inputs/Text.input";
 import NotFound from "../../../pages/defaults/NotFound";
 import AdminService from "../../services/api.service";
+import useAppContext from "../../../hooks/useApp";
 
 const TwoFA: React.FC = () => {
 	const { user, require2FA, setRequire2FA, setIs2FADone } = useAuthContext();
+	const { configs } = useAppContext();
 	const navigate = useNavigate();
 	const { notify } = useNotification();
 	const [searchParams] = useSearchParams();
@@ -37,8 +39,11 @@ const TwoFA: React.FC = () => {
 				if(!user) return;
 				const data = await AdminService.auth.twoFAValidate({username: user.username, role: user.role})
 				if(data){
-					setSecret(data.twofa_secret);
-					setIsSetupMode(!data.twofa_enabled);
+					// If user has a secret AND 2FA is enabled, they need to verify (not setup)
+					// If secret is missing OR 2FA is disabled, they need to setup
+					const needsSetup = !data.twofa_secret || !data.twofa_enabled;
+					setSecret(data.twofa_secret || "");
+					setIsSetupMode(needsSetup);
 				}
 			} catch (error) {
 				console.error("error validate: ", error);
@@ -122,7 +127,7 @@ const TwoFA: React.FC = () => {
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
 				setIs2FADone(true);
-				setTimeout(() => navigate("/dashboard"), 1000);
+				setTimeout(() => navigate(`/${configs.appName}-admin/dashboard`), 1000);
 			} else {
 				setMessage(data.message || "Invalid token.");
 				setTokenError(data.message || "Invalid token. Please try again.");
@@ -147,7 +152,7 @@ const TwoFA: React.FC = () => {
 
 	const handleCancel = () => {
 		notify && notify("2FA setup cancelled", "info");
-		navigate("/login");
+		navigate(`/${configs.appName}-admin`);
 	};
 
 	/** Prevent direct access without token parameter */

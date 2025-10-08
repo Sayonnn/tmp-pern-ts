@@ -37,8 +37,11 @@ const TwoFA: React.FC = () => {
 				if(!user) return;
 				const data = await ClientService.auth.twoFAValidate({username: user.username, role: "client"})
 				if(data){
-					setSecret(data.twofa_secret);
-					setIsSetupMode(!data.twofa_enabled);
+					// If user has a secret AND 2FA is enabled, they need to verify (not setup)
+					// If secret is missing OR 2FA is disabled, they need to setup
+					const needsSetup = !data.twofa_secret || !data.twofa_enabled;
+					setSecret(data.twofa_secret || "");
+					setIsSetupMode(needsSetup);
 				}
 			} catch (error) {
 				console.error("error validate: ", error);
