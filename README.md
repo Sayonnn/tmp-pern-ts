@@ -22,7 +22,7 @@ Password: Appname19!
 admin: admin | appname19!
 client: appname | appname19!
 ```
-
+ 
 ---
 
 ## 🔄 Reusing the Project
@@ -36,14 +36,16 @@ client: appname | appname19!
 7. Update `docker-compose.yml` if needed.
 8. Update GitHub workflows if needed.
 9. Update frontend `nginx.conf` if using a custom config.
-10. Add Google reCAPTCHA keys:
-
+10. Add Google reCAPTCHA keys: https://cloud.google.com/security/products/recaptcha
     * Frontend: site key
     * Backend: secret key
 11. Change default app password and mailing account in backend `.env`.
-12. Adjust ports if necessary.
-13. Ensure backend has a reCAPTCHA verification endpoint.
-14. Update frontend login forms to use the site key for reCAPTCHA.
+12. Create new Client and Create Google Sign In keys: https://console.cloud.google.com/
+    * Frontend: client ID
+    * Frontend: client secret
+13. Adjust ports if necessary.
+14. Ensure backend has a reCAPTCHA verification endpoint .
+15. Update frontend login forms to use the site key for reCAPTCHA.
 
 ```bash
 # Start Docker
