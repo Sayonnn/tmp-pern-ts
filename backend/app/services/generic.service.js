@@ -4,11 +4,11 @@ import { config } from "../configs/index.js";
 /* ===========================================
  * Enable 2FA for client
  * =========================================== */
-export const enableTwoFA = async (username, secret) => {
+export const enableTwoFA = async (username, secret,role) => {
   const sql = `
-    UPDATE ${config.db.abbr}_clients
+    UPDATE ${config.db.abbr}_${role}s
     SET twofa_enabled = TRUE, 
-        twofa_secret = $1,
+        twofa_secret = $1, 
         updated_at = NOW()
     WHERE username = $2
     RETURNING id, username, twofa_enabled
@@ -24,9 +24,9 @@ export const enableTwoFA = async (username, secret) => {
 /* ===========================================
  * Disable 2FA for client
  * =========================================== */
-export const disableTwoFA = async (username) => {
+export const disableTwoFA = async (username,role) => {
   const sql = `
-    UPDATE ${config.db.abbr}_clients
+    UPDATE ${config.db.abbr}_${role}s
     SET twofa_enabled = FALSE,
         twofa_secret = NULL,
         updated_at = NOW()
@@ -44,10 +44,10 @@ export const disableTwoFA = async (username) => {
 /* ===========================================
  * Get 2FA secret by username
  * =========================================== */
-export const getTwoFASecret = async (username) => {
+export const getTwoFASecret = async (username,role) => {
   const sql = `
     SELECT twofa_secret, twofa_enabled
-    FROM ${config.db.abbr}_clients
+    FROM ${config.db.abbr}_${role}s
     WHERE username = $1
   `;
   const result = await startQuery(sql, [username]);

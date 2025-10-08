@@ -7,7 +7,7 @@ import { errorResponse, successResponse } from "../utils/response.js";
 import { config } from "../configs/index.js";
 import { generateTOTPSecret, verifyTOTP } from "../utils/totp.js";
 import { generateQRCode } from "../utils/qrcode.js";
-import { enableTwoFA, disableTwoFA } from "../services/generic.service.js";
+import { enableTwoFA, disableTwoFA, getTwoFASecret } from "../services/generic.service.js";
 import { saveCookie, removeCookie } from "../utils/cookies.js";
 
 /*====================================
@@ -63,7 +63,7 @@ export async function logs(req, res) {
 		console.error("API /logs Error:", error.message || error);
 		res.status(500).json({ error: error.message || "Internal Server Error" });
 	}
-}
+} 
 
 /*====================================
 /* recaptcha (Generic)
@@ -130,7 +130,7 @@ export async function twoFASetup(req, res) {
 /*====================================*/
 export async function twoFAVerify(req, res) {
 	try {
-		const { token, secret, username } = req.body;
+		const { token, secret, username,role } = req.body;
 		if (!token || !secret || !username)
 			return errorResponse(
 				res,
@@ -141,7 +141,7 @@ export async function twoFAVerify(req, res) {
 		const verified = verifyTOTP(token, secret);
 		if (!verified) return errorResponse(res, 400, "Invalid or expired token");
 
-		const updatedUser = await enableTwoFA(username, secret);
+		const updatedUser = await enableTwoFA(username, secret,role);
 		return successResponse(res, "2FA verified and enabled successfully", {
 			user: updatedUser,
 		});
@@ -152,14 +152,30 @@ export async function twoFAVerify(req, res) {
 }
 
 /*====================================
+/* GET 2FA Datas
+/*====================================*/
+export async function TwoFADatas(req, res) {
+	try {
+		const { username,role } = req.body;
+		if (!username) return errorResponse(res, 400, "Username required");
+
+		const updatedUser = await getTwoFASecret(username,role);
+		return successResponse(res, "2FA disabled successfully", updatedUser);
+	} catch (error) {
+		console.error("API /2fa/disable Error:", error);
+		return errorResponse(res, 500, error.message || "Internal Server Error");
+	}
+}
+
+/*====================================
 /* 2FA DISABLE
 /*====================================*/
 export async function twoFADisable(req, res) {
 	try {
-		const { username } = req.body;
+		const { username,role } = req.body;
 		if (!username) return errorResponse(res, 400, "Username required");
 
-		const updatedUser = await disableTwoFA(username);
+		const updatedUser = await disableTwoFA(username,role);
 		return successResponse(res, "2FA disabled successfully", updatedUser);
 	} catch (error) {
 		console.error("API /2fa/disable Error:", error);
