@@ -18,6 +18,10 @@ const ProtectedRoute = ({ children, role }: ProtectedRouteProps) => {
     return <Navigate to={user?.role === "admin" ? `/${configs.appName}-admin` : "/"} />;
   }
 
+  // if(user?.twofa_enabled && !is2FADone) {
+  //   return <Navigate to={user?.role === "admin" ? `/${configs.appName}-admin` : "/login"} />;
+  // }
+
   // Authorized
   return <>{children}</>;
 };

@@ -9,6 +9,9 @@ import Dashboard from "../pages/Dashboard";
 import NotFound from "../../pages/defaults/NotFound";
 
 import type { RouteConfigArray } from "../../interfaces/authInterface";
+import ResetPassword from "../pages/auth/ResetPassword";
+import ForgotPassword from "../pages/auth/ForgotPassword";
+import TwoFA from "../pages/auth/TwoFA";
 
 /* ==========================================
  * Route Configuration (Admin)
@@ -23,34 +26,28 @@ export const routes: RouteConfigArray[] = [
     role: "admin",
     isProtected: false,
   },
-  // {
-  //   path: "/forgot-password",
-  //   element: <ForgotPassword />,
-  //   role: "admin",
-  //   isProtected: false,
-  // },
-  // {
-  //   path: "/reset-password/:token",
-  //   element: <ResetPassword />,
-  //   role: "admin",
-  //   isProtected: false,
-  // },
+  {
+    path: "/forgot-password",
+    element: <ForgotPassword />,
+    role: "admin",
+    isProtected: false,
+  },
+  {
+    path: "/reset-password",
+    element: <ResetPassword/>,
+    role: "admin",
+    isProtected: false,
+  },
 
   /* ============================
    * Two-Factor Authentication (2FA)
    * ============================ */
-  // {
-  //   path: "/setup-2fa",
-  //   element: <Setup2FA />,
-  //   role: "admin",
-  //   isProtected: true, // must be logged in
-  // },
-  // {
-  //   path: "/verify-2fa",
-  //   element: <Verify2FA />,
-  //   role: "admin",
-  //   isProtected: true, // verify after setup
-  // },
+  {
+    path: "/2fa",
+    element: <TwoFA />,
+    role: "admin",
+    isProtected: true, // must be logged in
+  },
 
   /* ============================
    * Google OAuth Callback

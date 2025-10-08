@@ -3,7 +3,7 @@ import type { AuthContextProps, DecodedToken, loginProcessArgsProps } from "../i
 import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";
-import ClientService from "../services/api.service";
+import ClientService from "../services/api.service"; 
 import AdminService from "../admin/services/api.service";
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -12,6 +12,9 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
+  const [is2FADone, setIs2FADone] = useState<boolean>(false);
+  // 2FA  
+  const [require2FA, setRequire2FA] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [_, setLoadingUser] = useState<boolean>(true);
 
@@ -22,6 +25,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   
         if (token) {
           const decoded: DecodedToken = jwtDecode(token);
+
           const now = Date.now() / 1000;
           if (decoded.exp > now) {
             setAccessToken(token);
@@ -29,7 +33,8 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           
             console.log(decoded)
             setUser(decoded);
-          
+
+        
             await refreshData(decoded.role);
           }else {
             removeStorage("authToken");
@@ -46,7 +51,7 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         setInitialized(true);
       }
     };
-   
+
     initializeAuth();
   }, []);
   
@@ -69,14 +74,16 @@ const login = async ({ username, password, role }: loginProcessArgsProps) => {
     setAccessToken(res.accessToken);
     setIsAuthenticated(true);
     setUser(res.user);
+    setRequire2FA(res.user.twofa_enabled);
+    console.log(res.user.twofa_enabled)
 
-    return { status: true, message: res.message };
+    return { status: true, message: res.message, require2FA: res.user.twofa_enabled };
   } catch (error: any) {
     return { status: false, message: "Login failed" };
   }
 };
 
-/** 🔄 Refresh User Data */
+/** Refresh User Data */
 const refreshData = async (role: string) => {
   setLoadingUser(true);
   try {
@@ -91,6 +98,7 @@ const refreshData = async (role: string) => {
     if (res && res.user) {
       console.log("Refreshed user data:", res);
       setUser(res.user);
+      
       return true;
     }
   } catch (err: any) {
@@ -110,7 +118,6 @@ const refreshData = async (role: string) => {
       } else {
         await ClientService.auth.logout();
       }
-      window.location.reload();
     } catch (err) {
       console.warn("Logout API failed, proceeding to clear local state anyway:", err);
     } finally {
@@ -118,6 +125,10 @@ const refreshData = async (role: string) => {
       setAccessToken(null);
       setIsAuthenticated(false);
       setUser(null);
+      setRequire2FA(false); 
+      
+      // Reload after state cleanup
+      window.location.reload();
     }
   };
 
@@ -126,7 +137,7 @@ const refreshData = async (role: string) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, accessToken, user, login, logout }}
+      value={{ isAuthenticated, accessToken, user, login, logout, require2FA, setRequire2FA, is2FADone, setIs2FADone }}
     >
       {children}
     </AuthContext.Provider>

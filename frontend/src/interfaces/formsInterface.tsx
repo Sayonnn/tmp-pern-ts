@@ -4,6 +4,10 @@ export interface TextInputProps {
   name: string;
   type?: string;
   value: string;
+  disabled?: boolean;
+  maxLength?: number;
+  inputMode?: string;
+  pattern?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string | null;
@@ -15,6 +19,7 @@ export interface PasswordInputProps {
   name: string;
   type?: string;
   value: string;
+  disabled?: boolean;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   placeholder?: string;
   error?: string | null;
@@ -24,6 +29,8 @@ export interface PasswordInputProps {
 export interface LoginButtonProps {
   loading?: boolean;
   label?: string;
+  disabled?: boolean;
+  onClick?: () => void;
 }
 
 export interface GoogleButtonProps {

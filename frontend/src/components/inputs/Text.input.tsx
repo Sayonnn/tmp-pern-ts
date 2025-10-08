@@ -7,6 +7,7 @@ const TextInput = ({
   name,
   type = "text",
   value,
+  maxLength,
   onChange,
   placeholder,
   error,
@@ -33,6 +34,7 @@ const TextInput = ({
           type={type}
           name={name}
           value={value}
+          maxLength={maxLength}
           onChange={handleChange}
           placeholder=" " 
           onFocus={() => setFocused(true)}

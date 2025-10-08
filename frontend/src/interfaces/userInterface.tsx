@@ -7,7 +7,7 @@ export interface User {
     permissions?: [number] | [];
     super_admin?: boolean;
     is_verified?: boolean;
-    two_fa_enabled?: boolean;
+    twofa_enabled?: boolean;
     updated_at?: string | null;
     created_at?: string | null;
 }

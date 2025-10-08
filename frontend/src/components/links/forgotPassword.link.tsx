@@ -8,12 +8,14 @@ const ForgotPasswordLink: React.FC<ForgotPasswordLinkProps> = ({
   className = "",
 }) => {
   return (
-    <Link
-      to={to}
-      className={`text-sm text-blue-600 hover:underline transition ${className}`}
-    >
-      {children}
-    </Link>
+    <div className="flex justify-end">
+      <Link
+        to={to}
+        className={`text-sm text-blue-600 hover:underline transition ${className}`}
+      >
+        {children}
+      </Link>
+    </div>
   );
 };
 

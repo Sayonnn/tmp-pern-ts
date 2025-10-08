@@ -10,6 +10,7 @@ export interface loginProcessResponseProps {
     field?: string;
     status: boolean;
     message: string;
+    require2FA?: boolean;
 }
 
 export interface DecodedToken extends User {
@@ -20,7 +21,14 @@ export interface roleHandlerProps {
     role:string;
 }
 
-export interface AuthContextProps {
+export interface twoFAProcessResponseProps {
+  require2FA: boolean;
+  setRequire2FA: (value: boolean) => void;
+  is2FADone: boolean;
+  setIs2FADone: (value: boolean) => void;
+}
+
+export interface AuthContextProps extends twoFAProcessResponseProps {
   isAuthenticated: boolean;
   accessToken: string | null;
   user: User | null;
@@ -43,4 +51,12 @@ export interface RouteConfigArray {
 
 export interface RecaptchaProps {
   onChange?: (token: string | null) => void;
+}
+
+export interface TwoFAResponse {
+  status: string | undefined;
+  success: boolean;
+  message?: string;
+  secret?: string;
+  qrCodeDataURL?: string;
 }

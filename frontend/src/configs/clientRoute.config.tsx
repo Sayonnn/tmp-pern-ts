@@ -14,6 +14,7 @@ import NotFound from "../pages/defaults/NotFound";
 import type { RouteConfigArray } from "../interfaces/authInterface";
 import ForgotPassword from "../pages/auth/ForgotPassword";
 import ResetPassword from "../pages/auth/ResetPassword";
+import TwoFA from "../pages/auth/TwoFA";
 
 /* ==========================================
  * Route Configuration
@@ -66,18 +67,12 @@ export const routes: RouteConfigArray[] = [
   /* ============================
    * Two-Factor Authentication (2FA)
    * ============================ */
-  // {
-  //   path: "/setup-2fa",
-  //   element: <Setup2FA />,
-  //   role: "client",
-  //   isProtected: true, // must be logged in
-  // },
-  // {
-  //   path: "/verify-2fa",
-  //   element: <Verify2FA />,
-  //   role: "client",
-  //   isProtected: true,
-  // },
+  {
+    path: "/2fa",
+    element: <TwoFA />,
+    role: "client",
+    isProtected: true,
+  },
 
   /* ============================
    * Google OAuth Callback
