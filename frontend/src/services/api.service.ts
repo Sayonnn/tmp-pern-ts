@@ -1,5 +1,5 @@
-import { postDatas } from "../services/axios.service";
-
+import { fetchData, postDatas } from "../services/axios.service";
+ 
 class ClientService {
 	private static instance: ClientService;
 	private static apiUrl: string = import.meta.env.VITE_API_URL;
@@ -29,11 +29,23 @@ class ClientService {
 		resetPassword: (data: { token: string | null; password: string }) =>
 			postDatas({ url: `${ClientService.apiUrl}/auth/reset-password`, data }),
 
+		/** tokens */
 		refreshToken: () =>
 			postDatas({ url: `${ClientService.apiUrl}/auth/refresh-token` }),
 
+		getAccessToken: () =>
+			fetchData({ url: `${ClientService.apiUrl}/get-access-token` }),
+
+		/** personal information */
 		refreshInformation: () =>
 			postDatas({url: `${ClientService.apiUrl}/auth/refresh-client-information`}),
+
+		/** 2fa */
+		get2FAProof:() => 
+			fetchData({url: `${ClientService.apiUrl}/get-2fa-proof`}),
+
+		set2FAProof:() => 
+			postDatas({url: `${ClientService.apiUrl}/set-2fa-proof`}),
 
 		twoFASetup: (data: { username: string, role: string }) =>
 			postDatas({ url: `${ClientService.apiUrl}/2fa/setup`, data }),

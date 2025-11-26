@@ -16,8 +16,12 @@ export const startClientRegistration = async (req, res) => {
         saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
         // 1 hour
         saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
+        /** set deafult 2fa cheacker if 2fa is enabled */
+        if(user?.twofa_enabled){
+          saveCookie(res,"is2FACompleted",false)
+        }
         
-        return successResponse(res, "Register successful", { user, accessToken });
+        return successResponse(res, "Register successful", { user });
     } catch (err) {
         console.error("Register Error:", err);
         if (err.field && err.message) return errorResponse(res, 400, err.message, err.field);
@@ -39,8 +43,12 @@ export const startClientLogin = async (req, res) => {
     saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
     // 1 hour
     saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
+    /** set deafult 2fa cheacker if 2fa is enabled */
+    if(user?.twofa_enabled){
+      saveCookie(res,"is2FACompleted",false)
+    }
 
-    return successResponse(res, "Login successful", { user, accessToken });
+    return successResponse(res, "Login successful", { user });
   } catch (err) {
     console.error("Login Error:", err);
     return errorResponse(res, 400, err.message || "Login failed, please try again");
@@ -52,11 +60,11 @@ export const startClientLogin = async (req, res) => {
  * =========================================== */
 export const refreshClientInformation = async (req, res) => {
   try {
-    const accessToken = req.headers['authorization'].split(' ')[1];
-
-    if (!accessToken) {
-      return errorResponse(res, 401, "Access token missing. Please log in again.");
-    }
+    // const accessToken = req.headers['authorization'].split(' ')[1];
+    /** we rotate the tokens in the backend only */
+    const accessToken = req.cookies.accessToken;
+    
+    if (!accessToken) return errorResponse(res, 401, "Access token missing. Please log in again.");
     
     const decoded = verifyToken(accessToken);
     
@@ -66,7 +74,6 @@ export const refreshClientInformation = async (req, res) => {
     
   } catch (err) {
     console.error("Refresh Token Error:", err);
-
     return errorResponse(res, 403, "Refresh failed. Please log in again.");
   }
 };

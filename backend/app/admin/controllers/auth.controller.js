@@ -30,8 +30,12 @@ export const startAdminRegistration = async (req, res) => {
     saveCookie(res, "refreshToken", refreshToken, 7 * 24 * 60 * 60 * 1000);
     // 1 hour
     saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
+    /** set deafult 2fa cheacker if 2fa is enabled */
+    if(user?.twofa_enabled){
+      saveCookie(res,"is2FACompleted",false)
+    }
 
-    return successResponse(res, "Register successful", { user, accessToken });
+    return successResponse(res, "Register successful", { user });
   } catch (err) {
     console.error("Register Error:", err);
 
@@ -61,7 +65,12 @@ export const startAdminLogin = async (req, res) => {
     // 1 hour
     saveCookie(res, "accessToken", accessToken, 1 * 60 * 60 * 1000);
 
-    return successResponse(res, "Login successful", { user, accessToken });
+    /** set deafult 2fa cheacker if 2fa is enabled */
+    if(user?.twofa_enabled){
+      saveCookie(res,"is2FACompleted",false)
+    }
+
+    return successResponse(res, "Login successful", { user });
   } catch (err) {
     console.error("Login Error:", err);
 
@@ -78,10 +87,11 @@ export const startAdminLogin = async (req, res) => {
  * =========================================== */
 export const refreshAdminInformation = async (req, res) => {
   try {
-    const accessToken = req.headers['authorization']?.split(' ')[1];
-    if (!accessToken) {
-      return errorResponse(res, 401, "Access token missing. Please log in again.");
-    }
+    // const accessToken = req.headers['authorization']?.split(' ')[1];
+    const accessToken = req.cookies.accessToken;
+    
+    if (!accessToken) return errorResponse(res, 401, "Access token missing. Please log in again.");
+    
 
     const decoded = verifyToken(accessToken);
 

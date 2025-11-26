@@ -24,14 +24,14 @@ export interface roleHandlerProps {
 export interface twoFAProcessResponseProps {
   require2FA: boolean;
   setRequire2FA: (value: boolean) => void;
-  is2FADone: boolean;
-  setIs2FADone: (value: boolean) => void;
 }
 
 export interface AuthContextProps extends twoFAProcessResponseProps {
   isAuthenticated: boolean;
-  accessToken: string | null;
+  accessToken?: string | null;
+  initialized: boolean;
   user: User | null;
+  setIsAuthenticated: (value: boolean) => void;
   login: (args: loginProcessArgsProps) => Promise<loginProcessResponseProps>;
   logout: () => void;
 }
@@ -47,6 +47,7 @@ export interface RouteConfigArray {
   role?: "admin" | "client";
   isAuthenticated?: boolean;
   isProtected?: boolean;
+  redirectIfAuthenticated?: boolean;
 }
 
 export interface RecaptchaProps {

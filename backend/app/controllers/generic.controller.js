@@ -44,6 +44,59 @@ export async function refreshToken(req, res) {
 }
 
 /*====================================
+/* Get Access Token (Generic) 
+/*====================================*/
+export async function getAccessToken(req,res){
+	try {
+		 const accessToken = req.cookies?.accessToken;
+		 if(!accessToken) return errorResponse(res, 403, "Access token expired. Please log in again.");
+		 
+		return successResponse(res, "Access token refreshed", { accessToken });
+	} catch (error) {
+		return errorResponse(res, 403, "Failed to get access token");
+	}
+}
+
+/* ====================================
+ * GET 2FA Proof ( used to protect pages if 2fa is not yet completed )
+ *======================================*/
+export async function get2FAProof(req, res) {
+    try {
+        const is2FACompletedCookie = req.cookies?.is2FACompleted;
+        
+        // Convert string to actual boolean
+        const is2FACompleted = is2FACompletedCookie === 'true' || is2FACompletedCookie === true;
+        
+        if (!is2FACompleted) {
+            return errorResponse(res, 403, "2FA not completed. Please complete 2FA first.");
+        }
+        
+        console.log("is2FACompleted: ", is2FACompleted);
+        
+        // Return actual boolean, not the cookie string
+        return successResponse(res, "2FA completed successfully", { is2FACompleted: true });
+    } catch {
+        return errorResponse(res, 403, "2FA not completed. Please complete 2FA first.");
+    }
+}
+/* ====================================
+ * SET 2FA Proof ( called on frontend 2fa verification )
+ *======================================*/
+export async function set2FAProof(req, res) {
+	try {
+	  // Set the cookie to indicate 2FA completion
+	  saveCookie(res, "is2FACompleted", true);
+  
+	  console.log("✅ 2FA completed, cookie set to true.");
+  
+	  return successResponse(res, "2FA completed successfully", { is2FACompleted: true });
+	} catch (err) {
+	  console.error("❌ set2FAProof error:", err);
+	  return errorResponse(res, 403, "Failed to set 2FA proof.");
+	}
+  }
+  
+/*====================================
 /* Logs (Generic)
 /*====================================*/
 export async function logs(req, res) {
@@ -112,7 +165,7 @@ export async function twoFASetup(req, res) {
 		const secret = generateTOTPSecret(username);
 		const otpauthUrl = `otpauth://totp/${encodeURIComponent(
 			username
-		)}?secret=${secret}&issuer=MyApp`;
+		)}?secret=${secret}&issuer=${config.app.appName}`;
 		const qrCodeDataURL = await generateQRCode(otpauthUrl);
 
 		return successResponse(res, "2FA secret generated successfully", {

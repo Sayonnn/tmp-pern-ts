@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import type { AuthContextProps, DecodedToken, loginProcessArgsProps } from "../interfaces/authInterface";
-import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";
 import ClientService from "../services/api.service"; 
@@ -12,30 +11,36 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [is2FADone, setIs2FADone] = useState<boolean>(false);
   // 2FA  
   const [require2FA, setRequire2FA] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
   const [_, setLoadingUser] = useState<boolean>(true);
 
   useEffect(() => {
+    /**
+     * NOTE: 3 steps here to persist data and avoid saving in local storage
+     * 1. each reload request information the token then distribute to the app
+     * 2. each request add the token to the header
+     * 3. after login get 2fa completed proof from backend
+     * 4. use that to determine whether the user completed the 2fa or not
+     */
     const initializeAuth = async () => {
       try {
-        const token = getStorage("authToken");
+        /** retrieve access token */
+        const token = await retrieveAccessToken();
+        // console.log("Access token: ", token);
   
         if (token) {
           const decoded: DecodedToken = jwtDecode(token);
 
           const now = Date.now() / 1000;
           if (decoded.exp > now) {
-            setAccessToken(token);
+            setAccessToken(token); 
             setIsAuthenticated(true);
-          
             setUser(decoded);
 
             await refreshData(decoded.role);
           }else {
-            removeStorage("authToken");
             setAccessToken(null);
             setIsAuthenticated(false);
             setUser(null);
@@ -44,18 +49,26 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         }
       } catch (err) {
         console.error("Initialize auth failed:", err);
-        logout();
       } finally {
         setInitialized(true);
       }
-    };
+    }; 
 
     initializeAuth();
   }, []);
 
-  useEffect(() => {
-    console.log("is2FADone: ", is2FADone);
-  },[is2FADone])
+/** get token */
+const retrieveAccessToken = async () => {
+  try {
+    const res = await ClientService.auth.getAccessToken();
+    if(!res){
+      console.error("Failed to retrieve access token. ",);
+    }
+    return res.accessToken;
+  } catch (error : any) {
+    console.error("Something went wrong: ", error.message);
+  }
+}
   
 /** Login */
 const login = async ({ username, password, role }: loginProcessArgsProps) => {
@@ -70,7 +83,6 @@ const login = async ({ username, password, role }: loginProcessArgsProps) => {
       res = await ClientService.auth.login({ username, password });
     }
 
-    setStorage("authToken", res.accessToken);
     setAccessToken(res.accessToken);
     setIsAuthenticated(true);
     setUser(res.user);
@@ -95,7 +107,7 @@ const refreshData = async (role: string) => {
     }
 
     if (res && res.user) {
-      console.log("Refreshed user data:", res);
+      // console.log("Refreshed user data:", res);
       setUser(res.user);
       
       return true;
@@ -120,13 +132,10 @@ const refreshData = async (role: string) => {
     } catch (err) {
       console.warn("Logout API failed, proceeding to clear local state anyway:", err);
     } finally {
-      removeStorage("authToken");
       setAccessToken(null);
       setIsAuthenticated(false);
       setUser(null);
       setRequire2FA(false); 
-      
-      window.location.reload();
     }
   };
 
@@ -135,7 +144,7 @@ const refreshData = async (role: string) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, accessToken, user, login, logout, require2FA, setRequire2FA, is2FADone, setIs2FADone }}
+      value={{ isAuthenticated, accessToken, user, login, logout, require2FA, setRequire2FA, setIsAuthenticated, initialized }}
     >
       {children}
     </AuthContext.Provider>

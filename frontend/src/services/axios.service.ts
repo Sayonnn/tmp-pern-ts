@@ -1,69 +1,77 @@
 import axios from "axios";
 import type { apiArgumentProps, fileArgumentProps } from "../interfaces/apiInterface";
-import { runCatchErrorLogger, runTryErrorLogger, throwCatchError, throwTryError } from "../utils/response.handler";
+import {
+  runCatchErrorLogger,
+  runTryErrorLogger,
+  throwCatchError,
+  throwTryError,
+} from "../utils/response.handler";
 
 export const API_URL = import.meta.env.VITE_API_URL;
 
-/**
- * Create axios instance
- * @param {Object} baseURL, headers, method, withCredentials, timeout
- * @returns axios instance
- */
+/* ==============================================================
+ * CREATE AXIOS INSTANCES
+ * ============================================================== */
+
+// Main instance for app requests
 const apiService = axios.create({
   baseURL: API_URL,
-  headers:{
-    'content-type':'application/json',
+  headers: { "Content-Type": "application/json" },
+  withCredentials: true,
+  timeout: 15000,
+});
+
+// Separate instance without interceptors for refreshing tokens
+const tokenApi = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+  timeout: 15000,
+});
+
+/* ==============================================================
+ * REQUEST INTERCEPTOR
+ * ============================================================== */
+apiService.interceptors.request.use(
+  async (config) => {
+    try {
+      // Skip adding token for the refresh endpoint itself
+      if (config.url?.includes("/get-access-token")) return config;
+
+      const { data } = await tokenApi.get("/get-access-token");
+      if (data?.accessToken) {
+        config.headers["Authorization"] = `Bearer ${data.accessToken}`;
+      }
+    } catch (error) {
+      console.warn("Token fetch failed in interceptor:", error);
+    }
+
+    return config;
   },
-  withCredentials:true,
-  timeout:15000,
-})
+  (error) => Promise.reject(error)
+);
 
-/**
- * Interceptors for request
- * @param {Object} config
- * @returns config or throws error
- */
-apiService.interceptors.request.use((config) => {
-  const token = localStorage.getItem('authToken');
-
-  if(token){
-    config.headers['Authorization'] = `Bearer ${token}`;
-  }
-
-  return config;
-})
-
-/**
- * Interceptors for response
- * @param {Object} response
- * @returns response or throws error
- */
+/* ==============================================================
+ * RESPONSE INTERCEPTOR
+ * ============================================================== */
 apiService.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    // If unauthorized (401) and we haven’t retried yet
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
-        // Call refresh token endpoint (refresh token stored in HttpOnly cookie)
-        const { data } = await apiService.post("/auth/refresh-access-token");
-        // Save new token
-        localStorage.setItem("authToken", data.accessToken);
+        // Use tokenApi to safely get a new token
+        const { data } = await tokenApi.get("/get-access-token");
 
-        // Update headers and retry the original request
-        apiService.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
-        originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
-
-        return apiService(originalRequest);
-      } catch (error) {
-        runCatchErrorLogger(error);
-        throwCatchError(error);
-
-        // Clear token and redirect to login (optional)
-        localStorage.removeItem("authToken");
+        if (data?.accessToken) {
+          originalRequest.headers.Authorization = `Bearer ${data.accessToken}`;
+          return apiService(originalRequest); 
+        }
+      } catch (err) {
+        runCatchErrorLogger(err);
+        throwCatchError(err);
         window.location.href = "/";
       }
     }
@@ -72,12 +80,14 @@ apiService.interceptors.response.use(
   }
 );
 
+/* ==============================================================
+ * GENERIC CRUD METHODS
+ * ============================================================== */
+
 /**
  * Fetch a single resource
- * @param {Object} url, data, params
- * @returns single resource data or throws error
  */
-export const fetchData = async ({ url, params = {} }: apiArgumentProps) => {
+export const fetchDatas = async ({ url, params = {} }: apiArgumentProps) => {
   try {
     const response = await apiService.get(url, { params });
 
@@ -96,10 +106,8 @@ export const fetchData = async ({ url, params = {} }: apiArgumentProps) => {
 
 /**
  * Fetch multiple resources
- * @param {Object} url, params
- * @returns multiple resources data or throws error
  */
-export const fetchDatas = async ({ url, params = {} }: apiArgumentProps) => {
+export const fetchData = async ({ url, params = {} }: apiArgumentProps) => {
   try {
     const response = await apiService.get(url, { params });
 
@@ -116,10 +124,7 @@ export const fetchDatas = async ({ url, params = {} }: apiArgumentProps) => {
 };
 
 /**
- * Create a single resource
- * @param {Object} url, data
- * @returns created resource data or throws error
- * Also used for login and registration 
+ * Create a resource (POST)
  */
 export const postDatas = async ({ url, data = {} }: apiArgumentProps) => {
   try {
@@ -138,9 +143,7 @@ export const postDatas = async ({ url, data = {} }: apiArgumentProps) => {
 };
 
 /**
- * Update a single resource
- * @param {Object} url, data, params
- * @returns updated resource data or throws error
+ * Update a resource (PUT)
  */
 export const putDatas = async ({ url, data = {}, params = {} }: apiArgumentProps) => {
   try {
@@ -157,11 +160,9 @@ export const putDatas = async ({ url, data = {}, params = {} }: apiArgumentProps
     throwCatchError(error);
   }
 };
-  
+
 /**
- * Delete a single resource
- * @param {Object} url, params
- * @returns deleted resource data or throws error
+ * Delete a resource (DELETE)
  */
 export const deleteDatas = async ({ url, params = {} }: apiArgumentProps) => {
   try {
@@ -180,43 +181,35 @@ export const deleteDatas = async ({ url, params = {} }: apiArgumentProps) => {
 };
 
 /* ==============================================================
- * Upload Assets
- * ============================================================= */
+ * UPLOAD & DOWNLOAD METHODS
+ * ============================================================== */
 
 /**
- * Upload a single asset
- * @param {Object} url, data
- * @returns uploaded asset data or throws error
+ * Upload a single file
  */
-export const uploadAsset = async ({url, file,onProgress}: fileArgumentProps) => {
-  if(!file){
-    throw new Error("No file provided");
-  }
+export const uploadAsset = async ({ url, file, onProgress }: fileArgumentProps) => {
+  if (!file) throw new Error("No file provided");
 
   try {
-   const formData = new FormData();
-   formData.append("file", file);
+    const formData = new FormData();
+    formData.append("file", file);
 
-   const response = await apiService.post(url, formData, {
-    headers:{
-      "Content-Type": "multipart/form-data",
-    },
-    withCredentials: true,
-    onUploadProgress:(progressEvent) => {
-      if(onProgress && progressEvent.total){
-        const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-        onProgress(progress);
-      }
+    const response = await apiService.post(url, formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      onUploadProgress: (progressEvent) => {
+        if (onProgress && progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+          onProgress(progress);
+        }
+      },
+    });
+
+    if (!response || !response.data) {
+      throwTryError(response);
+      runTryErrorLogger(response);
     }
-   });
 
-   if (!response || !response.data) {
-    throwTryError(response);
-    runTryErrorLogger(response);
-   }
-
-   return response.data;
-
+    return response.data;
   } catch (error: any) {
     runCatchErrorLogger(error);
     throwCatchError(error);
@@ -224,11 +217,9 @@ export const uploadAsset = async ({url, file,onProgress}: fileArgumentProps) => 
 };
 
 /**
- * Upload multiple assets with progress
- * @param {Object} url, files, onProgress
- * @returns uploaded assets data or throws error
+ * Upload multiple files
  */
-export const uploadAssets = async ({url,files,onProgress}: fileArgumentProps) => {
+export const uploadAssets = async ({ url, files, onProgress }: fileArgumentProps) => {
   if (!files || !Array.isArray(files) || files.length === 0) {
     throw new Error("No files provided");
   }
@@ -239,7 +230,6 @@ export const uploadAssets = async ({url,files,onProgress}: fileArgumentProps) =>
 
     const response = await apiService.post(url, formData, {
       headers: { "Content-Type": "multipart/form-data" },
-      withCredentials: true,
       onUploadProgress: (progressEvent) => {
         if (onProgress && progressEvent.total) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
@@ -261,20 +251,19 @@ export const uploadAssets = async ({url,files,onProgress}: fileArgumentProps) =>
 };
 
 /**
- * Download Assets
- * @param {Object} url - endpoint to fetch asset from
- * @param {Object} params - optional query parameters
- * @returns {Blob} downloaded asset data
+ * Download a file
  */
-export const downloadAsset = async ({ url, params = {},filename = "file" }: fileArgumentProps) => {
-  if(!filename){
-    throw new Error("No filename provided");
-  }
+export const downloadAsset = async ({
+  url,
+  params = {},
+  filename = "file",
+}: fileArgumentProps) => {
+  if (!filename) throw new Error("No filename provided");
 
   try {
-    const response = await apiService.get(url, { 
+    const response = await apiService.get(url, {
       params,
-      responseType: 'blob',
+      responseType: "blob",
     });
 
     if (!response || !response.data) {
@@ -282,12 +271,14 @@ export const downloadAsset = async ({ url, params = {},filename = "file" }: file
       runTryErrorLogger(response);
     }
 
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(response.data);
+    const blobUrl = URL.createObjectURL(response.data);
+    const link = document.createElement("a");
+    link.href = blobUrl;
     link.download = filename;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    URL.revokeObjectURL(blobUrl);
 
     return true;
   } catch (error: any) {
