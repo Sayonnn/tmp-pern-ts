@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from "react";
 import type { AuthContextProps, DecodedToken, loginProcessArgsProps } from "../interfaces/authInterface";
-// import { setStorage, removeStorage, getStorage } from "../utils/storage.handler";
 import { jwtDecode } from "jwt-decode";
 import type { User } from "../interfaces/userInterface";
 import ClientService from "../services/api.service"; 
@@ -12,7 +11,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [initialized, setInitialized] = useState<boolean>(false);
-  const [is2FADone, setIs2FADone] = useState<boolean>(false);
   // 2FA  
   const [require2FA, setRequire2FA] = useState<boolean>(false);
   const [user, setUser] = useState<User | null>(null);
@@ -23,13 +21,14 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
      * NOTE: 3 steps here to persist data and avoid saving in local storage
      * 1. each reload request information the token then distribute to the app
      * 2. each request add the token to the header
-     * 3. 
+     * 3. after login get 2fa completed proof from backend
+     * 4. use that to determine whether the user completed the 2fa or not
      */
     const initializeAuth = async () => {
       try {
         /** retrieve access token */
         const token = await retrieveAccessToken();
-        console.log("Access token: ", token);
+        // console.log("Access token: ", token);
   
         if (token) {
           const decoded: DecodedToken = jwtDecode(token);
@@ -38,7 +37,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (decoded.exp > now) {
             setAccessToken(token); 
             setIsAuthenticated(true);
-          
             setUser(decoded);
 
             await refreshData(decoded.role);
@@ -58,10 +56,6 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
     initializeAuth();
   }, []);
-
-  useEffect(() => {
-    console.log("is2FADone: ", is2FADone);
-  },[is2FADone])
 
 /** get token */
 const retrieveAccessToken = async () => {
@@ -113,7 +107,7 @@ const refreshData = async (role: string) => {
     }
 
     if (res && res.user) {
-      console.log("Refreshed user data:", res);
+      // console.log("Refreshed user data:", res);
       setUser(res.user);
       
       return true;
@@ -142,8 +136,6 @@ const refreshData = async (role: string) => {
       setIsAuthenticated(false);
       setUser(null);
       setRequire2FA(false); 
-      
-      // window.location.reload();
     }
   };
 
@@ -152,7 +144,7 @@ const refreshData = async (role: string) => {
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, accessToken, user, login, logout, require2FA, setRequire2FA, is2FADone, setIs2FADone }}
+      value={{ isAuthenticated, accessToken, user, login, logout, require2FA, setRequire2FA, setIsAuthenticated, initialized }}
     >
       {children}
     </AuthContext.Provider>

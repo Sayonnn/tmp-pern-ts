@@ -1,4 +1,4 @@
-import { postDatas } from "../../services/axios.service";
+import { fetchData, postDatas } from "../../services/axios.service";
 
 class AdminService {
 	private static instance: AdminService;
@@ -17,43 +17,30 @@ class AdminService {
 	/** Auth endpoints */
 	public auth = {
 		login: (data: { username: string; password: string }) =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/login`,
-				data,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/login`,data}),
 
 		logout: () =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/logout`,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/logout`}),
 
 		signup: (data: { username: string; email: string; password: string }) =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/register`,
-				data,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/register`,data}),
 
 		forgotPassword: (data: { email: string }) =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/forgot-password`,
-				data,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/forgot-password`,data}),
 
 		resetPassword: (data: { token: string | null; password: string }) =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/reset-password`,
-				data,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/reset-password`,data}),
 
+		/** tokens */
 		refreshToken: () =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-token`,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-token`}),
 
+		getAccessToken: () =>
+			fetchData({ url: `${AdminService.apiUrl}/get-access-token` }),
+		
+		/** personal information */
 		refreshInformation: () =>
-			postDatas({
-				url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-admin-information`,
-			}),
+			postDatas({url: `${AdminService.apiUrl}/${AdminService.appName}-admin/auth/refresh-admin-information`}),
 
 		/** 2FA endpoints (QR Code) - using generic routes */
 		twoFASetup: (data: { username: string, role: string }) =>

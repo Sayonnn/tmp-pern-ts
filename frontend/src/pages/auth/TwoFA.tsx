@@ -8,7 +8,7 @@ import NotFound from "../defaults/NotFound";
 import ClientService from "../../services/api.service";
 
 const TwoFA: React.FC = () => {
-	const { user, require2FA, setRequire2FA, setIs2FADone } = useAuthContext();
+	const { user, require2FA, setRequire2FA } = useAuthContext();
 	const navigate = useNavigate();
 	const { notify } = useNotification();
 	const [searchParams] = useSearchParams();
@@ -119,8 +119,9 @@ const TwoFA: React.FC = () => {
 				setMessage("Token verified successfully! Redirecting...");
 				notify && notify("2FA verified successfully!", "success");
 				setRequire2FA(false);
-				/** mark 2fa process as done */
-				setIs2FADone(true);
+				/** call the set2faproof here */
+				 await ClientService.auth.set2FAProof();
+				/** only set authenticated here */
 				setTimeout(() => navigate("/dashboard"), 1000);
 			} else {
 				setMessage(data.message || "Invalid token.");

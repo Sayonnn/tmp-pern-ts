@@ -71,7 +71,7 @@ export const routes: RouteConfigArray[] = [
     path: "/2fa",
     element: <TwoFA />,
     role: "client",
-    isProtected: true,
+    isProtected: false,
   },
 
   /* ============================
