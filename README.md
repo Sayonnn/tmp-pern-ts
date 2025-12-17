@@ -1,6 +1,6 @@
-# Sayon PH 🇵🇭 | PERN TS DOCKER TEMPLATE
+# PERN TS DOCKER TEMPLATE
 
-`appname` 🇵🇭 | Professional and extraordinary web portfolio
+`appname` | PERN Authentication template
 
 📂 **GitHub Repo:** [appname](https://github.com/Sayonnn/tmp-pern-ts.git)
 
@@ -65,16 +65,5 @@ cd backend && npm install
 
 * Export the database.
 * Make copies of `.env` files for frontend and backend.
-
----
-
-## 📝 Notes
-
-1. No 2FA yet (TOTP).
-2. Forgot password feature not implemented.
-3. Registration UI not implemented.
-4. Reset password UI not implemented.
-5. 2FA UI not implemented.
-6. Google reCAPTCHA **must be configured on both frontend and backend** for login forms.
 
 ---
